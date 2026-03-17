@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Reports Dashboard - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-emerald-600 rounded flex items-center justify-center hover:bg-emerald-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-emerald-500 text-emerald-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Reports</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Analytics</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Exports</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search reports..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Rachel+Green&background=10b981&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Rachel Green</span>
+                        <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Enhanced Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Reports Center</h2>
+                <nav class="space-y-1">
+                    <a href="#dashboard" class="bg-emerald-50 text-emerald-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showReportsSection('dashboard')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#report-search" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showReportsSection('report-search')">
+                        <i class="fas fa-search mr-3"></i>
+                        Report Search
+                    </a>
+                    <a href="#provider-reports" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showReportsSection('provider-reports')">
+                        <i class="fas fa-user-md mr-3"></i>
+                        Provider Reports
+                    </a>
+                    <a href="#network-reports" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showReportsSection('network-reports')">
+                        <i class="fas fa-network-wired mr-3"></i>
+                        Network Reports
+                    </a>
+                    <a href="#credentialing-reports" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showReportsSection('credentialing-reports')">
+                        <i class="fas fa-certificate mr-3"></i>
+                        Credentialing Reports
+                    </a>
+                    <a href="#audit-reports" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showReportsSection('audit-reports')">
+                        <i class="fas fa-clipboard-list mr-3"></i>
+                        Audit Reports
+                    </a>
+                </nav>
+
+                <!-- Report Categories -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Report Categories</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Provider Reports</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">23</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Network Reports</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">15</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Credentialing</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">18</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Audit Reports</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Reports Dashboard</h1>
+                            <p class="text-gray-600 mt-1">View, search, and access system-generated reports with advanced filtering and custom report generation</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <select class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>Last 30 Days</option>
+                                <option>Last 90 Days</option>
+                                <option>Last 6 Months</option>
+                                <option>Custom Range</option>
+                            </select>
+                            <button class="bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-emerald-700">
+                                <i class="fas fa-magic mr-2"></i>Build Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-emerald-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Reports Generated</p>
+                                <p class="text-3xl font-bold text-gray-900">1,247</p>
+                                <p class="text-sm text-emerald-600 flex items-center mt-2">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    12% from last month
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-file-alt text-emerald-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active Dashboards</p>
+                                <p class="text-3xl font-bold text-gray-900">43</p>
+                                <p class="text-sm text-blue-600 flex items-center mt-2">
+                                    <i class="fas fa-plus mr-1"></i>
+                                    5 new this week
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Scheduled Reports</p>
+                                <p class="text-3xl font-bold text-gray-900">89</p>
+                                <p class="text-sm text-purple-600 flex items-center mt-2">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    15 due today
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-calendar-check text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Data Exports</p>
+                                <p class="text-3xl font-bold text-gray-900">156</p>
+                                <p class="text-sm text-yellow-600 flex items-center mt-2">
+                                    <i class="fas fa-download mr-1"></i>
+                                    78 this week
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-file-download text-yellow-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Provider Performance Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-medium text-gray-900">Provider Performance Trends</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 bg-emerald-100 text-emerald-700 text-sm rounded">Weekly</button>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded">Monthly</button>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded">Quarterly</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Credentialing Status Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-medium text-gray-900">Credentialing Status</h3>
+                            <button class="text-emerald-600 hover:text-emerald-700 text-sm">
+                                <i class="fas fa-external-link-alt mr-1"></i>View Details
+                            </button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="credentialingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Reports and Quick Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Recent Reports -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Recent Reports</h3>
+                                <button class="text-emerald-600 hover:text-emerald-700 text-sm">View All</button>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-chart-bar text-blue-600"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="text-sm font-medium text-gray-900">Provider Network Coverage Report</h4>
+                                        <p class="text-sm text-gray-500">Generated by Sarah Wilson • 2 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">Completed</span>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-users text-purple-600"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="text-sm font-medium text-gray-900">Credentialing Status Summary</h4>
+                                        <p class="text-sm text-gray-500">Generated by Mike Johnson • 4 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">Completed</span>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-clock text-yellow-600"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="text-sm font-medium text-gray-900">Monthly Performance Analytics</h4>
+                                        <p class="text-sm text-gray-500">Generating... • Started 15 minutes ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">In Progress</span>
+                                    <div class="w-6 h-6 border-2 border-yellow-600 border-t-transparent rounded-full animate-spin"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button class="w-full flex items-center justify-between p-3 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-magic mr-3"></i>
+                                    <span class="text-sm font-medium">Build Custom Report</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+
+                            <button class="w-full flex items-center justify-between p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar-plus mr-3"></i>
+                                    <span class="text-sm font-medium">Schedule Report</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+
+                            <button class="w-full flex items-center justify-between p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-copy mr-3"></i>
+                                    <span class="text-sm font-medium">Duplicate Report</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+
+                            <button class="w-full flex items-center justify-between p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-share-alt mr-3"></i>
+                                    <span class="text-sm font-medium">Share Dashboard</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Report Templates -->
+                        <div class="mt-6">
+                            <h4 class="text-sm font-medium text-gray-900 mb-3">Popular Templates</h4>
+                            <div class="space-y-2">
+                                <a href="#" class="block text-sm text-emerald-600 hover:text-emerald-700">Provider Performance Summary</a>
+                                <a href="#" class="block text-sm text-emerald-600 hover:text-emerald-700">Credentialing Pipeline Report</a>
+                                <a href="#" class="block text-sm text-emerald-600 hover:text-emerald-700">Network Coverage Analysis</a>
+                                <a href="#" class="block text-sm text-emerald-600 hover:text-emerald-700">Quality Metrics Dashboard</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Search Section -->
+            <div id="report-search-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Report Search & Access</h1>
+                            <p class="text-gray-600 mt-1">Search and locate specific reports using advanced filters</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Report Search -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Search Reports</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Report Name</label>
+                            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Search report name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                <option>All Categories</option>
+                                <option>Provider</option>
+                                <option>Network</option>
+                                <option>Credentialing</option>
+                                <option>Audit</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                                <option>Last 90 days</option>
+                                <option>Custom range</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">
+                                <i class="fas fa-search mr-2"></i>Search Reports
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Results -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
+                            <span class="text-sm text-gray-500">68 reports found</span>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 hover:bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-chart-line text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Provider Performance Q1 2024</h4>
+                                        <p class="text-sm text-gray-500">Provider category • Generated 03/15/2024 • 127 pages</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-emerald-600 hover:text-emerald-700"><i class="fas fa-eye"></i></button>
+                                    <button class="text-blue-600 hover:text-blue-700"><i class="fas fa-download"></i></button>
+                                    <button class="text-gray-600 hover:text-gray-700"><i class="fas fa-share"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provider Reports Section -->
+            <div id="provider-reports-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Provider Reports</h1>
+                            <p class="text-gray-600 mt-1">Insights into provider performance, quality metrics, and analytics</p>
+                        </div>
+                        <button class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">
+                            <i class="fas fa-plus mr-2"></i>Generate Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Provider Report Types -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">12 Available</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Performance Analytics</h3>
+                        <p class="text-sm text-gray-600 mb-4">Provider quality scores, patient satisfaction, and outcome metrics</p>
+                        <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">
+                            <i class="fas fa-chart-bar mr-2"></i>View Performance Reports
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-green-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">8 Available</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Provider Directory</h3>
+                        <p class="text-sm text-gray-600 mb-4">Complete provider listings with contact info and specialties</p>
+                        <button class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm">
+                            <i class="fas fa-list mr-2"></i>View Directory Reports
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-star text-purple-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">6 Available</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Quality Metrics</h3>
+                        <p class="text-sm text-gray-600 mb-4">Quality scores, ratings, and patient feedback analysis</p>
+                        <button class="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 text-sm">
+                            <i class="fas fa-star mr-2"></i>View Quality Reports
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Reports Section -->
+            <div id="network-reports-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Network Reports</h1>
+                            <p class="text-gray-600 mt-1">Network performance, coverage analysis, and provider participation</p>
+                        </div>
+                        <button class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">
+                            <i class="fas fa-network-wired mr-2"></i>Generate Network Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Network Report Categories -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Coverage Analysis</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Geographic Coverage Report</span>
+                                    <p class="text-xs text-gray-500">Network reach by location</p>
+                                </div>
+                                <button class="text-green-600 hover:text-green-700">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Specialty Coverage</span>
+                                    <p class="text-xs text-gray-500">Coverage by medical specialties</p>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Network Gaps Analysis</span>
+                                    <p class="text-xs text-gray-500">Identify coverage gaps</p>
+                                </div>
+                                <button class="text-purple-600 hover:text-purple-700">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Provider Participation</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">In-Network Participation</span>
+                                    <p class="text-xs text-gray-500">Active in-network providers</p>
+                                </div>
+                                <button class="text-yellow-600 hover:text-yellow-700">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Out-Network Analysis</span>
+                                    <p class="text-xs text-gray-500">Out-of-network utilization</p>
+                                </div>
+                                <button class="text-red-600 hover:text-red-700">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Credentialing Reports Section -->
+            <div id="credentialing-reports-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Credentialing Reports</h1>
+                            <p class="text-gray-600 mt-1">View, search, and access system-generated reports with advanced filtering</p>
+                        </div>
+                        <button class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">
+                            <i class="fas fa-certificate mr-2"></i>Generate Credentialing Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Credentialing Report Types -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Status & Compliance Reports</h3>
+                        <div class="space-y-3">
+                            <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-900">Credentialing Pipeline</span>
+                                        <p class="text-xs text-gray-500">Current applications in process</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-emerald-600 hover:text-emerald-700 text-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-900">Expiration Tracking</span>
+                                        <p class="text-xs text-gray-500">Upcoming license and cert renewals</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-emerald-600 hover:text-emerald-700 text-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-900">Compliance Dashboard</span>
+                                        <p class="text-xs text-gray-500">Regulatory compliance status</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-emerald-600 hover:text-emerald-700 text-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Workflow & Performance</h3>
+                        <div class="space-y-3">
+                            <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-900">Processing Times</span>
+                                        <p class="text-xs text-gray-500">Average credentialing durations</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-emerald-600 hover:text-emerald-700 text-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-900">Bottleneck Analysis</span>
+                                        <p class="text-xs text-gray-500">Workflow efficiency insights</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-emerald-600 hover:text-emerald-700 text-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Reports Section -->
+            <div id="network-reports-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Network Reports</h1>
+                            <p class="text-gray-600 mt-1">Network performance, coverage analysis, and provider participation insights</p>
+                        </div>
+                        <button class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">
+                            <i class="fas fa-network-wired mr-2"></i>Generate Network Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Network Analytics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-600">94.2%</div>
+                            <div class="text-sm text-gray-600">Network Coverage</div>
+                            <div class="text-xs text-gray-500 mt-1">Across all specialties</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600">1,847</div>
+                            <div class="text-sm text-gray-600">Active Providers</div>
+                            <div class="text-xs text-gray-500 mt-1">In-network participants</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-purple-600">23</div>
+                            <div class="text-sm text-gray-600">Network Agreements</div>
+                            <div class="text-xs text-gray-500 mt-1">Active contracts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Reports Section -->
+            <div id="audit-reports-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Audit Reports</h1>
+                            <p class="text-gray-600 mt-1">Audit trails, data tracking, and compliance monitoring reports</p>
+                        </div>
+                        <button class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">
+                            <i class="fas fa-clipboard-list mr-2"></i>Generate Audit Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Audit Report Types -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">System Activity Audits</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">User Activity Log</span>
+                                    <p class="text-xs text-gray-500">System access and actions</p>
+                                </div>
+                                <button class="text-emerald-600 hover:text-emerald-700">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Data Change Tracking</span>
+                                    <p class="text-xs text-gray-500">Record modifications audit</p>
+                                </div>
+                                <button class="text-emerald-600 hover:text-emerald-700">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Security Events</span>
+                                    <p class="text-xs text-gray-500">Security incidents and alerts</p>
+                                </div>
+                                <button class="text-emerald-600 hover:text-emerald-700">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Compliance Monitoring</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Regulatory Compliance</span>
+                                    <p class="text-xs text-gray-500">HIPAA and regulatory adherence</p>
+                                </div>
+                                <button class="text-emerald-600 hover:text-emerald-700">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Data Integrity Check</span>
+                                    <p class="text-xs text-gray-500">Data quality and consistency</p>
+                                </div>
+                                <button class="text-emerald-600 hover:text-emerald-700">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for Reports
+        function showReportsSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-emerald-50', 'text-emerald-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-emerald-50', 'text-emerald-700');
+        }
+
+        // Initialize with dashboard view
+        document.addEventListener('DOMContentLoaded', function() {
+            showReportsSection('dashboard');
+        });
+        // Provider Performance Chart - High quality
+        const performanceCtx = document.getElementById('performanceChart');
+        if (performanceCtx) {
+            new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Credentialing Completed',
+                        data: [65, 78, 85, 92],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'Network Additions',
+                        data: [45, 52, 48, 67],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: '#e5e7eb',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                stepSize: 20,
+                                color: '#6b7280',
+                                font: { size: 12 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#e5e7eb',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                color: '#374151',
+                                font: { size: 12, weight: '500' }
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 8
+                        }
+                    }
+                }
+            });
+        }
+
+        // Credentialing Status Pie Chart - High quality
+        const credentialingCtx = document.getElementById('credentialingChart');
+        if (credentialingCtx) {
+            new Chart(credentialingCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'In Progress', 'Pending Review', 'Expired'],
+                    datasets: [{
+                        data: [65, 20, 10, 5],
+                        backgroundColor: [
+                            '#10b981',
+                            '#f59e0b',
+                            '#3b82f6',
+                            '#ef4444'
+                        ],
+                        borderWidth: 3,
+                        borderColor: '#ffffff',
+                        hoverBorderWidth: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                color: '#374151',
+                                font: { size: 12, weight: '500' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#ffffff',
+                            titleColor: '#374151',
+                            bodyColor: '#6b7280',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

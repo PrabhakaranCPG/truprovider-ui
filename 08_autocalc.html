@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced AutoCalc Dashboard - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .formula-editor { font-family: 'Monaco', 'Menlo', monospace; }
+        .rule-node { transition: all 0.2s ease; }
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .chart-container { height: 200px; }
+        }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .desktop-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-cyan-600 rounded flex items-center justify-center hover:bg-cyan-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-yellow-500 text-yellow-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">AutoCalc</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Rules Engine</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Analytics</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search rules..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Rules+Admin&background=eab308&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Rules Admin</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn fixed top-4 left-4 z-50 p-2 bg-cyan-600 text-white rounded-md md:hidden" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Enhanced Sidebar -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 fixed md:relative z-40 h-full transition-transform duration-300">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">AutoCalc Engine</h2>
+                <nav class="space-y-1">
+                    <a href="#dashboard" class="bg-yellow-50 text-yellow-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showAutoCalcSection('dashboard')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#upload-rules" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showAutoCalcSection('upload-rules')">
+                        <i class="fas fa-upload mr-3"></i>
+                        Upload AutoCalc
+                    </a>
+                    <a href="#rule-groups" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showAutoCalcSection('rule-groups')">
+                        <i class="fas fa-layer-group mr-3"></i>
+                        Rule Set Groups
+                    </a>
+                    <a href="#rule-sets" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showAutoCalcSection('rule-sets')">
+                        <i class="fas fa-code-branch mr-3"></i>
+                        Rule Sets
+                    </a>
+                    <a href="#rules" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showAutoCalcSection('rules')">
+                        <i class="fas fa-cog mr-3"></i>
+                        Rules & Actions
+                    </a>
+                    <a href="#inclusions-exclusions" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showAutoCalcSection('inclusions-exclusions')">
+                        <i class="fas fa-filter mr-3"></i>
+                        Inclusions/Exclusions
+                    </a>
+                </nav>
+
+                <!-- Rule Categories -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Rule Categories</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Provider Scoring</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">15</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Network Pricing</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">8</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Quality Metrics</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">12</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Risk Assessment</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">6</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 overflow-y-auto md:ml-0">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content p-4 md:p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">AutoCalc Dashboard</h1>
+                            <p class="text-gray-600 mt-1">Automate network affiliation for providers with intelligent rule engine</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50">
+                                <i class="fas fa-play mr-2"></i>Run Tests
+                            </button>
+                            <button class="bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-yellow-700">
+                                <i class="fas fa-plus mr-2"></i>New Rule
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Engine Status and Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active Rules</p>
+                                <p class="text-3xl font-bold text-gray-900">41</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    All validated
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-calculator text-yellow-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Daily Calculations</p>
+                                <p class="text-3xl font-bold text-gray-900">15,247</p>
+                                <p class="text-xs text-blue-600 flex items-center mt-2">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    12% increase
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-chart-bar text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Avg Processing Time</p>
+                                <p class="text-3xl font-bold text-gray-900">0.3s</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <i class="fas fa-tachometer-alt mr-1"></i>
+                                    Optimal
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Success Rate</p>
+                                <p class="text-3xl font-bold text-gray-900">99.7%</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <i class="fas fa-thumbs-up mr-1"></i>
+                                    Excellent
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-percentage text-purple-600 text-xl"></i>
+                            </div>
+                                <i class="fas fa-save mr-1"></i>Save Rule
+                            </button>
+                        </div>
+                        
+                        <!-- Rule Flow Visualization -->
+                        <div class="space-y-4">
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                <div class="flex items-center justify-center mb-2">
+                                    <i class="fas fa-play-circle text-green-500 text-2xl"></i>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">Start Condition</p>
+                                <p class="text-xs text-gray-600">Provider Type = 'Hospital'</p>
+                            </div>
+
+                            <div class="flex justify-center">
+                                <div class="w-px h-6 bg-gray-300"></div>
+                            </div>
+
+                            <div class="border border-yellow-300 bg-yellow-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-code-branch text-yellow-600 mr-2"></i>
+                                        <p class="text-sm font-medium text-gray-900">Logic Rule</p>
+                                    </div>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div class="formula-editor bg-gray-800 text-green-400 p-3 rounded text-sm">
+                                    IF (bed_count > 100) THEN<br>
+                                    &nbsp;&nbsp;tier_level = 1<br>
+                                    ELSE IF (bed_count > 50) THEN<br>
+                                    &nbsp;&nbsp;tier_level = 2<br>
+                                    ELSE<br>
+                                    &nbsp;&nbsp;tier_level = 3
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center">
+                                <div class="w-px h-6 bg-gray-300"></div>
+                            </div>
+
+                            <div class="border border-blue-300 bg-blue-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calculator text-blue-600 mr-2"></i>
+                                        <p class="text-sm font-medium text-gray-900">Calculation</p>
+                                    </div>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div class="formula-editor bg-gray-800 text-green-400 p-3 rounded text-sm">
+                                    score = base_score * tier_multiplier + quality_bonus
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center">
+                                <div class="w-px h-6 bg-gray-300"></div>
+                            </div>
+
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                <div class="flex items-center justify-center mb-2">
+                                    <i class="fas fa-flag-checkered text-red-500 text-2xl"></i>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">Output Result</p>
+                                <p class="text-xs text-gray-600">Provider Score</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Engine Performance</h3>
+                            <select class="text-sm border border-gray-300 rounded-md px-2 py-1">
+                                <option>Last 24 hours</option>
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Rules and Recent Executions -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Active Rules -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Active Rules</h3>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded hover:bg-gray-200">
+                                        <i class="fas fa-filter mr-1"></i>Filter
+                                    </button>
+                                    <button class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm rounded hover:bg-yellow-200">
+                                        <i class="fas fa-plus mr-1"></i>New
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="px-6 py-4 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="flex items-center">
+                                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded mr-3">Active</span>
+                                            <h4 class="text-sm font-medium text-gray-900">Provider Tier Assignment</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-500 mt-1">Calculates provider tier based on facility size and capabilities</p>
+                                        <div class="flex items-center mt-2 text-xs text-gray-400">
+                                            <span class="mr-4">Last run: 5 min ago</span>
+                                            <span class="mr-4">Executions: 1,247 today</span>
+                                            <span>Success: 99.8%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button class="text-gray-600 hover:text-gray-700 text-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-gray-600 hover:text-gray-700 text-sm">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="flex items-center">
+                                            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded mr-3">Testing</span>
+                                            <h4 class="text-sm font-medium text-gray-900">Quality Score Calculator</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-500 mt-1">Computes provider quality scores from multiple data sources</p>
+                                        <div class="flex items-center mt-2 text-xs text-gray-400">
+                                            <span class="mr-4">Last run: 2 hours ago</span>
+                                            <span class="mr-4">Executions: 456 today</span>
+                                            <span>Success: 97.2%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button class="text-gray-600 hover:text-gray-700 text-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-gray-600 hover:text-gray-700 text-sm">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="flex items-center">
+                                            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded mr-3">Scheduled</span>
+                                            <h4 class="text-sm font-medium text-gray-900">Network Coverage Analysis</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-500 mt-1">Analyzes geographic coverage gaps in provider network</p>
+                                        <div class="flex items-center mt-2 text-xs text-gray-400">
+                                            <span class="mr-4">Next run: 6:00 AM</span>
+                                            <span class="mr-4">Executions: 1 daily</span>
+                                            <span>Success: 100%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button class="text-gray-600 hover:text-gray-700 text-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-gray-600 hover:text-gray-700 text-sm">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button class="w-full flex items-center justify-between p-3 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100">
+                                <div class="flex items-center">
+                                    <i class="fas fa-magic mr-3"></i>
+                                    <span class="text-sm font-medium">Rule Wizard</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+
+                            <button class="w-full flex items-center justify-between p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100">
+                                <div class="flex items-center">
+                                    <i class="fas fa-flask mr-3"></i>
+                                    <span class="text-sm font-medium">Test Sandbox</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+
+                            <button class="w-full flex items-center justify-between p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100">
+                                <div class="flex items-center">
+                                    <i class="fas fa-download mr-3"></i>
+                                    <span class="text-sm font-medium">Export Rules</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+
+                            <button class="w-full flex items-center justify-between p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100">
+                                <div class="flex items-center">
+                                    <i class="fas fa-upload mr-3"></i>
+                                    <span class="text-sm font-medium">Import Rules</span>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="text-sm font-medium text-gray-900 mb-3">Recent Activity</h4>
+                            <div class="space-y-2">
+                                <div class="text-xs text-gray-600">
+                                    <span class="text-green-600">•</span> Rule "Provider Tier" executed successfully
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    <span class="text-blue-600">•</span> New rule "Risk Score" created
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    <span class="text-yellow-600">•</span> Rule "Quality Calc" updated
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload AutoCalc Section -->
+            <div id="upload-rules-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Upload AutoCalc Rules</h1>
+                            <p class="text-gray-600 mt-1">Upload and import AutoCalc rule configurations</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Interface -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-6">Import Rule Configuration</h3>
+                    
+                    <!-- Drag and Drop Area -->
+                    <div class="border-2 border-dashed border-yellow-300 rounded-lg p-8 text-center hover:border-yellow-400 bg-yellow-50">
+                        <div class="space-y-4">
+                            <div class="flex justify-center">
+                                <i class="fas fa-cloud-upload-alt text-yellow-500 text-4xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">Upload AutoCalc Rules</h4>
+                                <p class="text-sm text-gray-600">Drag and drop your rule files here, or click to browse</p>
+                            </div>
+                            <div class="flex justify-center space-x-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    .json
+                                </span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    .xml
+                                </span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    .csv
+                                </span>
+                            </div>
+                            <button class="bg-yellow-600 text-white px-6 py-2 rounded-md hover:bg-yellow-700">
+                                <i class="fas fa-folder-open mr-2"></i>Choose Files
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Upload History -->
+                    <div class="mt-6">
+                        <h4 class="text-sm font-medium text-gray-900 mb-3">Recent Uploads</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-file-code text-green-600 mr-3"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">provider_tier_rules.json</p>
+                                        <p class="text-xs text-gray-500">Uploaded 2 hours ago • 15 rules imported</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Success</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-file-excel text-blue-600 mr-3"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">network_scoring.csv</p>
+                                        <p class="text-xs text-gray-500">Uploaded 1 day ago • 8 rules imported</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Processed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rule Set Groups Section -->
+            <div id="rule-groups-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Rule Set Groups Management</h1>
+                            <p class="text-gray-600 mt-1">Configure and manage rule set groups for organized processing</p>
+                        </div>
+                        <button class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700">
+                            <i class="fas fa-plus mr-2"></i>Add Rule Set Group
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rule Set Groups List -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-network-wired text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900">Provider Network Rules</h3>
+                                    <p class="text-sm text-gray-500">Network affiliation automation</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <button class="text-blue-600 hover:text-blue-700 p-1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-700 p-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Rule Sets:</span>
+                                <span class="font-medium text-gray-900">12</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Active Rules:</span>
+                                <span class="font-medium text-green-600">8</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Last Modified:</span>
+                                <span class="text-gray-500">2 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-star text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900">Quality Scoring Rules</h3>
+                                    <p class="text-sm text-gray-500">Provider quality calculations</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <button class="text-blue-600 hover:text-blue-700 p-1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-700 p-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Rule Sets:</span>
+                                <span class="font-medium text-gray-900">6</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Active Rules:</span>
+                                <span class="font-medium text-green-600">6</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Last Modified:</span>
+                                <span class="text-gray-500">1 week ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rule Sets Section -->
+            <div id="rule-sets-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Rule Sets Management</h1>
+                            <p class="text-gray-600 mt-1">Add and edit rule sets within groups</p>
+                        </div>
+                        <button class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700">
+                            <i class="fas fa-plus mr-2"></i>Add Rule Set
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rule Sets Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Active Rule Sets</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rule Set Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rules Count</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Modified</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-network-wired text-blue-600 mr-3"></i>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Hospital Tier Assignment</div>
+                                                <div class="text-sm text-gray-500">Facility-based tier calculation</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Provider Network
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">5</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/15/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-star text-green-600 mr-3"></i>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Quality Score Calculator</div>
+                                                <div class="text-sm text-gray-500">Multi-factor quality assessment</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Quality Scoring
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">8</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Testing
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/12/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rules & Actions Section -->
+            <div id="rules-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Rules & Actions Management</h1>
+                            <p class="text-gray-600 mt-1">Define conditions and actions for auto calculation triggers</p>
+                        </div>
+                        <button class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700">
+                            <i class="fas fa-plus mr-2"></i>Add Rules
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rules Configuration -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Rule Conditions -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Rule Conditions</h3>
+                        <div class="space-y-4">
+                            <div class="border border-gray-200 rounded-lg p-4 hover:border-yellow-300">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-sm font-medium text-gray-900">Provider Type Condition</h4>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <code class="bg-gray-100 px-2 py-1 rounded">provider_type == 'HOSPITAL'</code>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-2">Triggers when provider is classified as hospital</div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4 hover:border-yellow-300">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-sm font-medium text-gray-900">Bed Count Threshold</h4>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <code class="bg-gray-100 px-2 py-1 rounded">bed_count > 100</code>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-2">For large facility classification</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rule Actions -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Rule Set Actions</h3>
+                        <div class="space-y-4">
+                            <!-- In-Network Actions -->
+                            <div class="border border-green-200 bg-green-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-sm font-medium text-gray-900">In-Network Actions</h4>
+                                    <div class="flex space-x-1">
+                                        <button class="text-green-600 hover:text-green-700 text-xs">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-700 text-xs">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 text-xs">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-check text-green-600 mr-2"></i>
+                                        <span>Set tier_level = 1</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-check text-green-600 mr-2"></i>
+                                        <span>Apply preferred_provider = true</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-check text-green-600 mr-2"></i>
+                                        <span>Update network_status = 'IN_NETWORK'</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Out-Network Actions -->
+                            <div class="border border-red-200 bg-red-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-sm font-medium text-gray-900">Out-Network Actions</h4>
+                                    <div class="flex space-x-1">
+                                        <button class="text-red-600 hover:text-red-700 text-xs">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-700 text-xs">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 text-xs">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-times text-red-600 mr-2"></i>
+                                        <span>Set tier_level = 3</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-times text-red-600 mr-2"></i>
+                                        <span>Apply preferred_provider = false</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-times text-red-600 mr-2"></i>
+                                        <span>Update network_status = 'OUT_NETWORK'</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inclusions/Exclusions Section -->
+            <div id="inclusions-exclusions-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Ruleset Inclusions & Exclusions</h1>
+                            <p class="text-gray-600 mt-1">Define which records are included or excluded from rule set application</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                                <i class="fas fa-plus mr-2"></i>Add Inclusions
+                            </button>
+                            <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                                <i class="fas fa-minus mr-2"></i>Add Exclusions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inclusions/Exclusions Management -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Inclusions -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-green-50">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Ruleset Inclusions</h3>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">23 Active</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                <div class="border border-green-200 rounded-lg p-3 hover:bg-green-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Large Hospital Systems</p>
+                                            <p class="text-xs text-gray-500">bed_count >= 200 AND specialty_count >= 5</p>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="border border-green-200 rounded-lg p-3 hover:bg-green-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Teaching Hospitals</p>
+                                            <p class="text-xs text-gray-500">teaching_status = true</p>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="border border-green-200 rounded-lg p-3 hover:bg-green-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Accredited Facilities</p>
+                                            <p class="text-xs text-gray-500">accreditation_status IN ['JCAHO', 'AAAHC']</p>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exclusions -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-red-50">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Ruleset Exclusions</h3>
+                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">8 Active</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                <div class="border border-red-200 rounded-lg p-3 hover:bg-red-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Pending Credentialing</p>
+                                            <p class="text-xs text-gray-500">credentialing_status = 'PENDING'</p>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="border border-red-200 rounded-lg p-3 hover:bg-red-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Inactive Providers</p>
+                                            <p class="text-xs text-gray-500">status = 'INACTIVE' OR last_activity < 90_days</p>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="border border-red-200 rounded-lg p-3 hover:bg-red-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Test Facilities</p>
+                                            <p class="text-xs text-gray-500">provider_id LIKE 'TEST_%'</p>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for AutoCalc
+        function showAutoCalcSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-yellow-50', 'text-yellow-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-yellow-50', 'text-yellow-700');
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Initialize with dashboard view
+        document.addEventListener('DOMContentLoaded', function() {
+            showAutoCalcSection('dashboard');
+        });
+        // Performance Chart - Fixed sizing
+        const autoCalcCtx = document.getElementById('performanceChart');
+        if (autoCalcCtx) {
+            autoCalcCtx.width = 400;
+            autoCalcCtx.height = 200;
+            
+            new Chart(autoCalcCtx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                    datasets: [{
+                        label: 'Executions/hour',
+                        data: [120, 85, 190, 450, 380, 320, 180],
+                        borderColor: '#eab308',
+                        backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3
+                    }, {
+                        label: 'Avg Response Time (ms)',
+                        data: [250, 220, 280, 320, 290, 260, 240],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1',
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    layout: {
+                        padding: 5
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            position: 'left',
+                            max: 500,
+                            grid: { color: '#f3f4f6' },
+                            ticks: {
+                                stepSize: 100,
+                                maxTicksLimit: 6
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            max: 350,
+                            grid: { display: false },
+                            ticks: {
+                                stepSize: 50,
+                                maxTicksLimit: 6
+                            }
+                        },
+                        x: {
+                            grid: { color: '#f3f4f6' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, padding: 15 }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

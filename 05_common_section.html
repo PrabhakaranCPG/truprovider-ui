@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Common Section - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .toggle-switch { transition: all 0.2s ease; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .desktop-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-teal-600 rounded flex items-center justify-center hover:bg-teal-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-teal-500 text-teal-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Settings</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Configuration</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Integration</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=System+Admin&background=14b8a6&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">System Admin</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn fixed top-4 left-4 z-50 p-2 bg-teal-600 text-white rounded-md md:hidden" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Enhanced Sidebar -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 fixed md:relative z-40 h-full transition-transform duration-300">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Common Settings</h2>
+                <nav class="space-y-1">
+                    <a href="#overview" class="bg-teal-50 text-teal-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonSection('overview')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Overview
+                    </a>
+                    <a href="#notes" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonSection('notes')">
+                        <i class="fas fa-sticky-note mr-3"></i>
+                        Notes Management
+                    </a>
+                    <a href="#checklist" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonSection('checklist')">
+                        <i class="fas fa-check-square mr-3"></i>
+                        Checklists
+                    </a>
+                    <a href="#documents" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonSection('documents')">
+                        <i class="fas fa-folder-open mr-3"></i>
+                        Documents
+                    </a>
+                    <a href="#letters" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonSection('letters')">
+                        <i class="fas fa-envelope mr-3"></i>
+                        Letters
+                    </a>
+                    <a href="#audit-log" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonSection('audit-log')">
+                        <i class="fas fa-clipboard-list mr-3"></i>
+                        Audit Log
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 overflow-y-auto md:ml-0">
+            <!-- Overview Section -->
+            <div id="overview-section" class="section-content p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Common Section Dashboard</h1>
+                            <p class="text-gray-600 mt-1">Shared utilities: Notes, Checklists, Documents, Letters, and Audit Logs</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50">
+                                <i class="fas fa-undo mr-2"></i>Reset to Defaults
+                            </button>
+                            <button class="bg-teal-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-teal-700">
+                                <i class="fas fa-save mr-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Sections -->
+                <div class="space-y-6">
+                    <!-- Application Settings -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Application Settings</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Application Name</label>
+                                    <input type="text" value="TruProvider" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Environment</label>
+                                    <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                        <option>Production</option>
+                                        <option>Staging</option>
+                                        <option>Development</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Session Timeout (minutes)</label>
+                                    <input type="number" value="30" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Default Language</label>
+                                    <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                        <option>English (US)</option>
+                                        <option>Spanish</option>
+                                        <option>French</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Data Management</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Auto-backup Data</h4>
+                                        <p class="text-sm text-gray-500">Automatically backup system data daily</p>
+                                    </div>
+                                    <div class="relative inline-block w-12 h-6">
+                                        <input type="checkbox" class="sr-only" checked>
+                                        <div class="toggle-switch bg-teal-600 rounded-full w-12 h-6 flex items-center cursor-pointer">
+                                            <div class="bg-white w-5 h-5 rounded-full shadow-md transform translate-x-6 transition-transform"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Data Retention Period</h4>
+                                        <p class="text-sm text-gray-500">How long to keep archived data</p>
+                                    </div>
+                                    <select class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                        <option>7 years</option>
+                                        <option>5 years</option>
+                                        <option>3 years</option>
+                                    </select>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Enable Data Encryption</h4>
+                                        <p class="text-sm text-gray-500">Encrypt sensitive data at rest</p>
+                                    </div>
+                                    <div class="relative inline-block w-12 h-6">
+                                        <input type="checkbox" class="sr-only" checked>
+                                        <div class="toggle-switch bg-teal-600 rounded-full w-12 h-6 flex items-center cursor-pointer">
+                                            <div class="bg-white w-5 h-5 rounded-full shadow-md transform translate-x-6 transition-transform"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Workflow Configuration -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Workflow Configuration</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-4">
+                                    <h4 class="text-sm font-medium text-gray-900">Default Workflows</h4>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Provider Credentialing</p>
+                                                <p class="text-xs text-gray-500">Standard credentialing process</p>
+                                            </div>
+                                            <button class="text-teal-600 hover:text-teal-700 text-sm">Configure</button>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Document Review</p>
+                                                <p class="text-xs text-gray-500">Document verification workflow</p>
+                                            </div>
+                                            <button class="text-teal-600 hover:text-teal-700 text-sm">Configure</button>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Network Updates</p>
+                                                <p class="text-xs text-gray-500">Provider network change process</p>
+                                            </div>
+                                            <button class="text-teal-600 hover:text-teal-700 text-sm">Configure</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <h4 class="text-sm font-medium text-gray-900">Notification Settings</h4>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm text-gray-900">Email Notifications</span>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <div class="toggle-switch bg-teal-600 rounded-full w-12 h-6 flex items-center cursor-pointer">
+                                                    <div class="bg-white w-5 h-5 rounded-full shadow-md transform translate-x-6 transition-transform"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm text-gray-900">SMS Alerts</span>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <div class="toggle-switch bg-gray-300 rounded-full w-12 h-6 flex items-center cursor-pointer">
+                                                    <div class="bg-white w-5 h-5 rounded-full shadow-md transform translate-x-1 transition-transform"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm text-gray-900">In-App Notifications</span>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <div class="toggle-switch bg-teal-600 rounded-full w-12 h-6 flex items-center cursor-pointer">
+                                                    <div class="bg-white w-5 h-5 rounded-full shadow-md transform translate-x-6 transition-transform"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Integration Settings -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">External Integrations</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-database text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900">CAQH ProView API</h4>
+                                            <p class="text-sm text-gray-500">Provider data verification service</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
+                                            Connected
+                                        </span>
+                                        <button class="text-gray-400 hover:text-gray-600">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-envelope text-purple-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900">Email Service (SendGrid)</h4>
+                                            <p class="text-sm text-gray-500">Automated email communications</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
+                                            Connected
+                                        </span>
+                                        <button class="text-gray-400 hover:text-gray-600">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-file-pdf text-red-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900">Document Processing API</h4>
+                                            <p class="text-sm text-gray-500">Automated document analysis</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <span class="w-2 h-2 bg-yellow-400 rounded-full mr-1"></span>
+                                            Pending
+                                        </span>
+                                        <button class="text-gray-400 hover:text-gray-600">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Health -->
+                    <div class="bg-white rounded-lg shadow md:mx-4 lg:mx-6 xl:mx-8 mb-4 md:mb-6 lg:mb-8">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">System Health</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                                    </div>
+                                    <h4 class="text-sm font-medium text-gray-900">Database</h4>
+                                    <p class="text-sm text-green-600">Healthy</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-server text-green-600 text-2xl"></i>
+                                    </div>
+                                    <h4 class="text-sm font-medium text-gray-900">Application Server</h4>
+                                    <p class="text-sm text-green-600">Running</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl"></i>
+                                    </div>
+                                    <h4 class="text-sm font-medium text-gray-900">Background Jobs</h4>
+                                    <p class="text-sm text-yellow-600">2 Queued</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Management Section -->
+            <div id="notes-section" class="section-content p-4 md:p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Notes Management</h1>
+                            <p class="text-gray-600 mt-1">Add, filter, and search notes related to work items</p>
+                        </div>
+                        <button class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700" onclick="openAddNoteModal()">
+                            <i class="fas fa-plus mr-2"></i>Add Note
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notes Filter -->
+                <div class="bg-white rounded-lg shadow p-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <input type="text" placeholder="Search notes..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Work Items</option>
+                                <option>PFO Supervisor</option>
+                                <option>PNM</option>
+                                <option>CRED Supervisor</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Categories</option>
+                                <option>Important</option>
+                                <option>Follow-up</option>
+                                <option>Issue</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button class="w-full bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700">
+                                <i class="fas fa-search mr-2"></i>Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes List -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Work Item Notes</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-yellow-100 p-2 rounded-full">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-sm font-medium text-gray-900">Missing malpractice insurance documents</p>
+                                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">High Priority</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">Dr. Sarah Johnson's credentialing case requires updated malpractice insurance certificate. Follow up needed within 48 hours.</p>
+                                    <div class="flex items-center mt-2 text-xs text-gray-400">
+                                        <span>Work Item: CRED-2024-001</span>
+                                        <span class="mx-2">•</span>
+                                        <span>Added by Jennifer Adams</span>
+                                        <span class="mx-2">•</span>
+                                        <span>2 hours ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-green-100 p-2 rounded-full">
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-sm font-medium text-gray-900">License verification completed</p>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Resolved</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">All medical licenses verified for Memorial Hospital. Ready for final approval.</p>
+                                    <div class="flex items-center mt-2 text-xs text-gray-400">
+                                        <span>Work Item: PFO-2024-089</span>
+                                        <span class="mx-2">•</span>
+                                        <span>Added by Mike Chen</span>
+                                        <span class="mx-2">•</span>
+                                        <span>4 hours ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checklists Section -->
+            <div id="checklist-section" class="section-content p-4 md:p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Checklists</h1>
+                            <p class="text-gray-600 mt-1">Pre-defined checklists for Credentialing and PNM processes</p>
+                        </div>
+                        <button class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700">
+                            <i class="fas fa-plus mr-2"></i>Create Checklist
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Checklist Categories -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    <!-- Credentialing Checklist -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Credentialing Checklist</h3>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Active</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="cred-1" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500" checked>
+                                    <label for="cred-1" class="ml-3 text-sm text-gray-900">Verify demographics information</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="cred-2" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500" checked>
+                                    <label for="cred-2" class="ml-3 text-sm text-gray-900">Validate medical licenses</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="cred-3" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                    <label for="cred-3" class="ml-3 text-sm text-gray-900">Review education & training credentials</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="cred-4" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                    <label for="cred-4" class="ml-3 text-sm text-gray-900">Confirm specialty certifications</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="cred-5" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                    <label for="cred-5" class="ml-3 text-sm text-gray-900">Verify malpractice insurance</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="cred-6" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                    <label for="cred-6" class="ml-3 text-sm text-gray-900">Check hospital affiliations</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="cred-7" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                    <label for="cred-7" class="ml-3 text-sm text-gray-900">Validate references</label>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <div class="text-sm text-gray-600">
+                                    Progress: <span class="font-medium">2/7 completed</span> (29%)
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-teal-600 h-2 rounded-full" style="width: 29%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PNM Checklist -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">PNM Checklist</h3>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="pnm-1" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500" checked>
+                                    <label for="pnm-1" class="ml-3 text-sm text-gray-900">Create provider lead</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="pnm-2" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500" checked>
+                                    <label for="pnm-2" class="ml-3 text-sm text-gray-900">Assign to specialist</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="pnm-3" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500" checked>
+                                    <label for="pnm-3" class="ml-3 text-sm text-gray-900">Collect demographics data</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="pnm-4" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                    <label for="pnm-4" class="ml-3 text-sm text-gray-900">Verify contact information</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="pnm-5" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                    <label for="pnm-5" class="ml-3 text-sm text-gray-900">Process bulk upload data</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="pnm-6" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                    <label for="pnm-6" class="ml-3 text-sm text-gray-900">Send to onboarding team</label>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <div class="text-sm text-gray-600">
+                                    Progress: <span class="font-medium">3/6 completed</span> (50%)
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-teal-600 h-2 rounded-full" style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Section -->
+            <div id="documents-section" class="section-content p-4 md:p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Document Management</h1>
+                            <p class="text-gray-600 mt-1">Upload and manage documents by category for each work item</p>
+                        </div>
+                        <button class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700">
+                            <i class="fas fa-upload mr-2"></i>Upload Document
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Document Categories -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <i class="fas fa-file-import text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-gray-900">Intake Documents</h3>
+                                <p class="text-xs text-gray-500">Onboarding docs</p>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-blue-600 mb-1">89</div>
+                        <div class="text-sm text-gray-600">documents</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <i class="fas fa-certificate text-purple-600 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-gray-900">Credentialing</h3>
+                                <p class="text-xs text-gray-500">License & certs</p>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-purple-600 mb-1">156</div>
+                        <div class="text-sm text-gray-600">documents</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <i class="fas fa-file-contract text-green-600 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-gray-900">Contracting</h3>
+                                <p class="text-xs text-gray-500">Contracts & legal</p>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-green-600 mb-1">67</div>
+                        <div class="text-sm text-gray-600">documents</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <i class="fas fa-envelope text-yellow-600 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-gray-900">Letters</h3>
+                                <p class="text-xs text-gray-500">Reference letters</p>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-yellow-600 mb-1">34</div>
+                        <div class="text-sm text-gray-600">documents</div>
+                    </div>
+                </div>
+
+                <!-- Recent Documents -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Documents</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                            <div class="flex items-center">
+                                <i class="fas fa-file-pdf text-red-500 text-xl mr-4"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Dr_Johnson_License.pdf</p>
+                                    <p class="text-sm text-gray-500">Credentialing • 2.4 MB • 2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-teal-600 hover:text-teal-700">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                            <div class="flex items-center">
+                                <i class="fas fa-file-word text-blue-500 text-xl mr-4"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Contract_Template.docx</p>
+                                    <p class="text-sm text-gray-500">Contracting • 186 KB • 4 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-teal-600 hover:text-teal-700">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Letters Section -->
+            <div id="letters-section" class="section-content p-4 md:p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Letters Integration</h1>
+                    <p class="text-gray-600 mt-1">View letters by categories with version history and verification</p>
+                </div>
+
+                <!-- Letters Categories -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4 text-center hover:shadow-lg cursor-pointer">
+                        <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-handshake text-indigo-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-sm font-medium text-gray-900">Welcome Letters</h3>
+                        <p class="text-2xl font-bold text-indigo-600 mt-1">12</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 text-center hover:shadow-lg cursor-pointer">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-sm font-medium text-gray-900">Approval Notices</h3>
+                        <p class="text-2xl font-bold text-green-600 mt-1">8</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 text-center hover:shadow-lg cursor-pointer">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-file-alt text-yellow-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-sm font-medium text-gray-900">Document Requests</h3>
+                        <p class="text-2xl font-bold text-yellow-600 mt-1">15</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 text-center hover:shadow-lg cursor-pointer">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-info-circle text-purple-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-sm font-medium text-gray-900">Status Updates</h3>
+                        <p class="text-2xl font-bold text-purple-600 mt-1">6</p>
+                    </div>
+                </div>
+
+                <!-- Letter Management Tools -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Letter Management Tools</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button class="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-teal-400 text-gray-600 hover:text-teal-600">
+                            <i class="fas fa-history mr-2"></i>
+                            View Version History
+                        </button>
+                        <button class="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-teal-400 text-gray-600 hover:text-teal-600">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Send Letter
+                        </button>
+                        <button class="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-teal-400 text-gray-600 hover:text-teal-600">
+                            <i class="fas fa-check-double mr-2"></i>
+                            Verify Content
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Log Section -->
+            <div id="audit-log-section" class="section-content p-4 md:p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Audit Log</h1>
+                            <p class="text-gray-600 mt-1">View all audit records with advanced search and grouping</p>
+                        </div>
+                        <button class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700">
+                            <i class="fas fa-download mr-2"></i>Export Audit Log
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search Audit Log -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Search Audit Log</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Search Keywords</label>
+                            <input type="text" placeholder="Enter search keywords..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Time</option>
+                                <option>Last 24 Hours</option>
+                                <option>Last Week</option>
+                                <option>Last Month</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Group By</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>None</option>
+                                <option>User</option>
+                                <option>Action Type</option>
+                                <option>Module</option>
+                                <option>Date</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Records -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Audit Records</h3>
+                            <div class="text-sm text-gray-600">
+                                <strong>1,247 records found</strong> • Showing recent 25
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-03-16 15:30:45</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-6 w-6 rounded-full" src="https://ui-avatars.com/api/?name=Jennifer+Adams&background=6366f1&color=fff" alt="">
+                                            <span class="ml-2 text-sm font-medium text-gray-900">Jennifer Adams</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            CREATE
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">PFO Supervisor</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Created new provider profile PRV-2024-001</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Success
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-03-16 14:15:22</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-6 w-6 rounded-full" src="https://ui-avatars.com/api/?name=Mike+Chen&background=10b981&color=fff" alt="">
+                                            <span class="ml-2 text-sm font-medium text-gray-900">Mike Chen</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            UPDATE
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">CRED Supervisor</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Updated credentialing status for CRED-2024-001</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Success
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Note Modal -->
+    <div id="addNoteModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Add Note</h3>
+                        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeAddNoteModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Work Item</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>CRED-2024-001 - Dr. Sarah Johnson</option>
+                                <option>PNM-2024-002 - Oak Valley Medical</option>
+                                <option>PFO-2024-089 - Memorial Hospital</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>General</option>
+                                <option>Important</option>
+                                <option>Follow-up Required</option>
+                                <option>Issue/Problem</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Note Content</label>
+                            <textarea class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" rows="4" placeholder="Enter your note here..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 text-base font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Add Note
+                    </button>
+                    <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeAddNoteModal()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Section Navigation for Common Section
+        function showCommonSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-teal-50', 'text-teal-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-teal-50', 'text-teal-700');
+        }
+
+        // Add Note Modal Functions
+        function openAddNoteModal() {
+            document.getElementById('addNoteModal').classList.remove('hidden');
+        }
+
+        function closeAddNoteModal() {
+            document.getElementById('addNoteModal').classList.add('hidden');
+        }
+
+        // Initialize with overview view
+        document.addEventListener('DOMContentLoaded', function() {
+            showCommonSection('overview');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced CRED Supervisor Dashboard - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .progress-ring { transform: rotate(-90deg); }
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .chart-container { height: 200px; }
+        }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .desktop-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-purple-600 rounded flex items-center justify-center hover:bg-purple-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-purple-500 text-purple-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Credentialing</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Workflows</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Quality</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search credentials..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Lisa+Martinez&background=8b5cf6&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Lisa Martinez</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn fixed top-4 left-4 z-50 p-2 bg-purple-600 text-white rounded-md md:hidden" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Enhanced Sidebar -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 fixed md:relative z-40 h-full transition-transform duration-300">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">CRED Supervisor</h2>
+                <nav class="space-y-1">
+                    <a href="#dashboard" class="bg-purple-50 text-purple-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCredSection('dashboard')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#my-work-items" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCredSection('my-work-items')">
+                        <i class="fas fa-clipboard-list mr-3"></i>
+                        My Work Items
+                        <span class="ml-auto bg-purple-500 text-white rounded-full px-2 py-1 text-xs">8</span>
+                    </a>
+                    <a href="#dept-work-items" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCredSection('dept-work-items')">
+                        <i class="fas fa-list-ul mr-3"></i>
+                        Department Work Items
+                    </a>
+                    <a href="#verification" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCredSection('verification')">
+                        <i class="fas fa-check-double mr-3"></i>
+                        Practitioner Verification
+                    </a>
+                    <a href="#batch-upload" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCredSection('batch-upload')">
+                        <i class="fas fa-file-upload mr-3"></i>
+                        Batch File Upload
+                    </a>
+                    <a href="#profile-worklist" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCredSection('profile-worklist')">
+                        <i class="fas fa-user-cog mr-3"></i>
+                        Profile ID Worklist
+                    </a>
+                    <a href="#team-management" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCredSection('team-management')">
+                        <i class="fas fa-users mr-3"></i>
+                        Team Assignment
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 overflow-y-auto md:ml-0">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content p-4 md:p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">CRED Supervisor Dashboard</h1>
+                            <p class="text-gray-600 mt-1">Verify and assign work items to credentialing specialists, manage team workflow</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <select class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>This Month</option>
+                                <option>Last 30 Days</option>
+                                <option>This Quarter</option>
+                            </select>
+                            <button class="bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-700">
+                                <i class="fas fa-plus mr-2"></i>New Case
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Active Cases</p>
+                                <p class="text-3xl font-bold text-gray-900">147</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">On Track</span>
+                                </div>
+                            </div>
+                            <div class="relative w-16 h-16">
+                                <svg class="w-16 h-16 progress-ring" viewBox="0 0 42 42">
+                                    <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#e5e7eb" stroke-width="3"/>
+                                    <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#8b5cf6" stroke-width="3" 
+                                            stroke-dasharray="75 25" stroke-linecap="round"/>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-xs font-bold text-purple-600">75%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Avg Processing Time</p>
+                                <p class="text-3xl font-bold text-gray-900">12.5</p>
+                                <p class="text-xs text-gray-600">days</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                <span>Target: 15 days</span>
+                                <span>83%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 83%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Overdue Cases</p>
+                                <p class="text-3xl font-bold text-red-600">8</p>
+                                <p class="text-xs text-red-600">Requires attention</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Completion Rate</p>
+                                <p class="text-3xl font-bold text-green-600">94.2%</p>
+                                <p class="text-xs text-green-600">Above target</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Tracking and Team Performance -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <!-- Credentialing Pipeline -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Credentialing Pipeline</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-blue-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-900">Initial Review</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm font-medium text-gray-900">23</span>
+                                    <div class="w-16 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 62%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-yellow-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-900">Document Verification</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm font-medium text-gray-900">45</span>
+                                    <div class="w-16 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-purple-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-900">Committee Review</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm font-medium text-gray-900">31</span>
+                                    <div class="w-16 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-900">Final Approval</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm font-medium text-gray-900">48</span>
+                                    <div class="w-16 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team Performance -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Team Performance</h3>
+                        <div class="chart-container">
+                            <canvas id="teamChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Priority Cases and Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    <!-- Priority Cases -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Priority Cases</h3>
+                                <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">8 overdue</span>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="px-6 py-4 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="flex items-center">
+                                            <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded mr-2">HIGH</span>
+                                            <h4 class="text-sm font-medium text-gray-900">Dr. Sarah Johnson - Cardiology</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-500 mt-1">Missing malpractice insurance docs</p>
+                                        <p class="text-xs text-red-600 mt-1">Overdue by 3 days</p>
+                                    </div>
+                                    <button class="text-purple-600 hover:text-purple-700">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="flex items-center">
+                                            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded mr-2">MED</span>
+                                            <h4 class="text-sm font-medium text-gray-900">Memorial Hospital - Facility</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-500 mt-1">Awaiting accreditation verification</p>
+                                        <p class="text-xs text-gray-600 mt-1">Due in 2 days</p>
+                                    </div>
+                                    <button class="text-purple-600 hover:text-purple-700">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Recent Activity</h3>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Mike+Chen&background=10b981&color=fff" alt="">
+                                    <div class="ml-3 flex-1">
+                                        <p class="text-sm text-gray-900">
+                                            <span class="font-medium">Mike Chen</span> completed credentialing review
+                                        </p>
+                                        <p class="text-sm text-gray-500">Dr. Emma Davis - Internal Medicine</p>
+                                        <p class="text-xs text-gray-400 mt-1">15 minutes ago</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Approved</span>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Anna+Wilson&background=f59e0b&color=fff" alt="">
+                                    <div class="ml-3 flex-1">
+                                        <p class="text-sm text-gray-900">
+                                            <span class="font-medium">Anna Wilson</span> requested additional documentation
+                                        </p>
+                                        <p class="text-sm text-gray-500">Springfield Clinic - Group Practice</p>
+                                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                                    </div>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Work Items Section -->
+            <div id="my-work-items-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">My Work Items</h1>
+                    <p class="text-gray-600 mt-1">All credentialing cases assigned to you for verification and processing</p>
+                </div>
+
+                <!-- My Work Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+                        <div class="text-xl font-bold text-purple-600">8</div>
+                        <div class="text-sm text-gray-600">Assigned to Me</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+                        <div class="text-xl font-bold text-blue-600">5</div>
+                        <div class="text-sm text-gray-600">In Verification</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+                        <div class="text-xl font-bold text-yellow-600">3</div>
+                        <div class="text-sm text-gray-600">Pending Review</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+                        <div class="text-xl font-bold text-red-600">2</div>
+                        <div class="text-sm text-gray-600">Overdue</div>
+                    </div>
+                </div>
+
+                <!-- My Work Items Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">My Assigned Cases</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Case ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-purple-600 hover:text-purple-900 font-medium text-sm">CRED-2024-001</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Dr+Sarah+Johnson&background=8b5cf6&color=fff" alt="">
+                                            <div class="ml-3">
+                                                <div class="text-sm font-medium text-gray-900">Dr. Sarah Johnson</div>
+                                                <div class="text-sm text-gray-500">Cardiology</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Practitioner
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Document Verification
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            High
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/18/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-purple-600 hover:text-purple-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department Work Items Section -->
+            <div id="dept-work-items-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Department Work Items</h1>
+                    <p class="text-gray-600 mt-1">All credentialing cases in the department for assignment and oversight</p>
+                </div>
+
+                <!-- Department Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4 text-center">
+                        <div class="text-2xl font-bold text-gray-900">147</div>
+                        <div class="text-sm text-gray-600">Total Active Cases</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 text-center">
+                        <div class="text-2xl font-bold text-purple-600">89</div>
+                        <div class="text-sm text-gray-600">Assigned Cases</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 text-center">
+                        <div class="text-2xl font-bold text-yellow-600">58</div>
+                        <div class="text-sm text-gray-600">Unassigned Cases</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 text-center">
+                        <div class="text-2xl font-bold text-red-600">8</div>
+                        <div class="text-sm text-gray-600">Overdue Cases</div>
+                    </div>
+                </div>
+
+                <!-- Assignment Panel -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Case Assignment & Monitoring</h3>
+                        <div class="flex space-x-2">
+                            <button class="bg-purple-600 text-white px-3 py-2 rounded text-sm hover:bg-purple-700">
+                                <i class="fas fa-user-plus mr-1"></i>Assign Case
+                            </button>
+                            <button class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+                                <i class="fas fa-tasks mr-1"></i>Bulk Assign
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-clipboard-list text-4xl mb-4"></i>
+                        <p>147 credentialing cases available for assignment and monitoring</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practitioner Verification Section -->
+            <div id="verification-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Practitioner Verification</h1>
+                    <p class="text-gray-600 mt-1">Comprehensive verification checklist for practitioner credentialing</p>
+                </div>
+
+                <!-- Verification Sections Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Demographics -->
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <i class="fas fa-user text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Demographics</h3>
+                                <p class="text-sm text-gray-500">Personal information validation</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">Verify name, DOB, SSN, address</div>
+                    </div>
+
+                    <!-- License -->
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <i class="fas fa-id-card text-green-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">License</h3>
+                                <p class="text-sm text-gray-500">Medical license verification</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">State licenses, DEA, NPI validation</div>
+                    </div>
+
+                    <!-- Education & Training -->
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <i class="fas fa-graduation-cap text-purple-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Education & Training</h3>
+                                <p class="text-sm text-gray-500">Academic credentials</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">Medical school, residency, fellowship</div>
+                    </div>
+
+                    <!-- Specialty -->
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <i class="fas fa-stethoscope text-yellow-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Specialty</h3>
+                                <p class="text-sm text-gray-500">Board certifications</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">Primary/secondary specialties, certifications</div>
+                    </div>
+
+                    <!-- Contact -->
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-indigo-100 p-3 rounded-lg">
+                                <i class="fas fa-address-book text-indigo-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Contact</h3>
+                                <p class="text-sm text-gray-500">Communication details</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">Phone, email, preferred contact method</div>
+                    </div>
+
+                    <!-- Practice Location -->
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-pink-100 p-3 rounded-lg">
+                                <i class="fas fa-map-marker-alt text-pink-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Practice Location</h3>
+                                <p class="text-sm text-gray-500">Practice addresses</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">Primary/secondary practice locations</div>
+                    </div>
+
+                    <!-- Hospital Affiliation -->
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-teal-100 p-3 rounded-lg">
+                                <i class="fas fa-hospital text-teal-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Hospital Affiliation</h3>
+                                <p class="text-sm text-gray-500">Hospital privileges</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">Affiliated hospitals and privileges</div>
+                    </div>
+
+                    <!-- Malpractice Insurance -->
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-red-100 p-3 rounded-lg">
+                                <i class="fas fa-shield-alt text-red-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Malpractice Insurance</h3>
+                                <p class="text-sm text-gray-500">Insurance coverage</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">Coverage amounts, carrier, claims history</div>
+                    </div>
+
+                    <!-- References -->
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-gray-100 p-3 rounded-lg">
+                                <i class="fas fa-users text-gray-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">References</h3>
+                                <p class="text-sm text-gray-500">Professional references</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">Peer and professional references</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch File Upload Section -->
+            <div id="batch-upload-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Batch File Upload</h1>
+                    <p class="text-gray-600 mt-1">Upload adhoc batch files for bulk credentialing processing</p>
+                </div>
+
+                <!-- Upload Area -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 cursor-pointer">
+                        <div class="text-gray-400 text-4xl mb-4">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Drop batch file here or click to browse</h3>
+                        <p class="text-gray-500">Supports .xlsx, .csv, .txt formats</p>
+                        <button class="mt-4 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
+                            <i class="fas fa-folder-open mr-2"></i>Choose File
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Batch Upload History -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Batch Uploads</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">credentialing_batch_001.xlsx</p>
+                                <p class="text-sm text-gray-500">Uploaded: 2 hours ago • 25 records processed</p>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Completed</span>
+                        </div>
+                        <div class="px-6 py-4 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">provider_updates_002.csv</p>
+                                <p class="text-sm text-gray-500">Uploaded: 1 day ago • 15 records processed</p>
+                            </div>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Processing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile ID Worklist Section -->
+            <div id="profile-worklist-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Profile ID Worklist</h1>
+                    <p class="text-gray-600 mt-1">Cases moved from credentialing to PFO team with activated profiles</p>
+                </div>
+
+                <!-- Profile Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                        <div class="text-2xl font-bold text-green-600">34</div>
+                        <div class="text-sm text-gray-600">Active Profiles</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> Moved to PFO
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                        <div class="text-2xl font-bold text-yellow-600">12</div>
+                        <div class="text-sm text-gray-600">Pending Updates</div>
+                        <div class="text-xs text-yellow-600 mt-1">
+                            <i class="fas fa-edit"></i> Require changes
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                        <div class="text-2xl font-bold text-blue-600">8</div>
+                        <div class="text-sm text-gray-600">Recent Updates</div>
+                        <div class="text-xs text-blue-600 mt-1">
+                            <i class="fas fa-clock"></i> Last 24 hours
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Worklist Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Profile Updates Access</h3>
+                    </div>
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-user-cog text-4xl mb-4"></i>
+                        <p>34 profiles available for credentialing team access and updates</p>
+                        <p class="text-sm mt-2">Even after cases become profiles, credentialing team can make required changes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Assignment Section -->
+            <div id="team-management-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Team Assignment & Management</h1>
+                    <p class="text-gray-600 mt-1">Assign work items to credentialing specialists and manage workload</p>
+                </div>
+
+                <!-- Team Performance -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Team Workload Distribution</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full mr-3" src="https://ui-avatars.com/api/?name=Mike+Chen&background=8b5cf6&color=fff" alt="Mike">
+                                    <span class="text-sm font-medium text-gray-900">Mike Chen</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-600">23 cases</span>
+                                    <div class="w-20 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 76%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full mr-3" src="https://ui-avatars.com/api/?name=Anna+Wilson&background=f59e0b&color=fff" alt="Anna">
+                                    <span class="text-sm font-medium text-gray-900">Anna Wilson</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-600">19 cases</span>
+                                    <div class="w-20 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 63%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full mr-3" src="https://ui-avatars.com/api/?name=David+Kim&background=10b981&color=fff" alt="David">
+                                    <span class="text-sm font-medium text-gray-900">David Kim</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-600">17 cases</span>
+                                    <div class="w-20 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 57%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Assignment Actions</h3>
+                        <div class="space-y-4">
+                            <button class="w-full bg-purple-600 text-white px-4 py-3 rounded-md hover:bg-purple-700 flex items-center justify-center">
+                                <i class="fas fa-random mr-2"></i>
+                                Auto-Assign Cases
+                            </button>
+                            <button class="w-full bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 flex items-center justify-center">
+                                <i class="fas fa-hand-point-right mr-2"></i>
+                                Manual Assignment
+                            </button>
+                            <button class="w-full bg-yellow-600 text-white px-4 py-3 rounded-md hover:bg-yellow-700 flex items-center justify-center">
+                                <i class="fas fa-share mr-2"></i>
+                                Send to Onboarding
+                            </button>
+                            <button class="w-full bg-green-600 text-white px-4 py-3 rounded-md hover:bg-green-700 flex items-center justify-center">
+                                <i class="fas fa-check-double mr-2"></i>
+                                Bulk Verification
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for CRED Supervisor
+        function showCredSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-purple-50', 'text-purple-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-purple-50', 'text-purple-700');
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.querySelector('.sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+        
+        // Initialize with dashboard view
+        document.addEventListener('DOMContentLoaded', function() {
+            showCredSection('dashboard');
+        });
+        // Team Performance Chart - High quality
+        const teamCtx = document.getElementById('teamChart');
+        if (teamCtx) {
+            new Chart(teamCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mike C.', 'Anna W.', 'David K.', 'Lisa M.', 'John D.'],
+                    datasets: [{
+                        label: 'Cases Completed',
+                        data: [23, 19, 17, 21, 15],
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 6,
+                        borderWidth: 0,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 25,
+                            grid: {
+                                color: '#e5e7eb',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                stepSize: 5,
+                                color: '#6b7280',
+                                font: { size: 12 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

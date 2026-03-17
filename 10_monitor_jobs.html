@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Monitor Jobs - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .job-status-pulse { animation: pulse 2s infinite; }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-gray-600 rounded flex items-center justify-center hover:bg-gray-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-gray-500 text-gray-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Job Monitor</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Queue Management</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Performance</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search jobs..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full job-status-pulse"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Job+Monitor&background=4b5563&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Job Monitor</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Enhanced Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Job Monitor</h2>
+                <nav class="space-y-1">
+                    <a href="#dashboard" class="bg-gray-50 text-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showJobSection('dashboard')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#all-jobs" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showJobSection('all-jobs')">
+                        <i class="fas fa-list mr-3"></i>
+                        All Jobs
+                    </a>
+                    <a href="#cred-jobs" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showJobSection('cred-jobs')">
+                        <i class="fas fa-user-check mr-3"></i>
+                        Cred Jobs
+                    </a>
+                    <a href="#mass-load" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showJobSection('mass-load')">
+                        <i class="fas fa-upload mr-3"></i>
+                        Mass Load Jobs
+                    </a>
+                    <a href="#mass-update" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showJobSection('mass-update')">
+                        <i class="fas fa-edit mr-3"></i>
+                        Mass Update Jobs
+                    </a>
+                    <a href="#auto-calc" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showJobSection('auto-calc')">
+                        <i class="fas fa-calculator mr-3"></i>
+                        Auto Calc Jobs
+                    </a>
+                </nav>
+
+                <!-- Job Types -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Job Types</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Credentialing</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">23</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Mass Load</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">8</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Mass Update</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">12</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Auto Calc</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">6</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                            <i class="fas fa-pause mr-2"></i>Pause Queue
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                            <i class="fas fa-sync mr-2"></i>Retry Failed Jobs
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                            <i class="fas fa-trash mr-2"></i>Clear Completed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Job Monitoring Dashboard</h1>
+                            <p class="text-gray-600 mt-1">Monitor credentialing, mass processing, and auto calculation jobs</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full job-status-pulse"></div>
+                                <span class="text-sm text-gray-600">Queue Active</span>
+                            </div>
+                            <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50">
+                                <i class="fas fa-pause mr-2"></i>Pause All
+                            </button>
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+                                <i class="fas fa-plus mr-2"></i>Schedule Job
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Queue Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active Jobs</p>
+                                <p class="text-3xl font-bold text-gray-900">23</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-1 job-status-pulse"></div>
+                                    Running normally
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-play text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Queued Jobs</p>
+                                <p class="text-3xl font-bold text-gray-900">156</p>
+                                <p class="text-xs text-blue-600 flex items-center mt-2">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Avg wait: 2.3s
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-hourglass-half text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Failed Jobs</p>
+                                <p class="text-3xl font-bold text-gray-900">8</p>
+                                <p class="text-xs text-red-600 flex items-center mt-2">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    Requires attention
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Completed Today</p>
+                                <p class="text-3xl font-bold text-gray-900">2,847</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    99.7% success rate
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Performance and Real-time Status -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Job Performance Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Job Execution Trends</h3>
+                            <select class="text-sm border border-gray-300 rounded-md px-2 py-1">
+                                <option>Last 24 hours</option>
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="jobChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Job Status -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Currently Running Jobs</h3>
+                                <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-1 inline-block job-status-pulse"></span>
+                                    23 Active
+                                </span>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-200 max-h-80 overflow-y-auto">
+                            <div class="px-6 py-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Provider Data Sync</h4>
+                                        <p class="text-xs text-gray-500">Job ID: sync-2024-001</p>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Running</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+                                    <div class="bg-blue-500 h-2 rounded-full progress-bar" style="width: 67%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500">
+                                    <span>67% complete</span>
+                                    <span>Est. 3m remaining</span>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Monthly Report Generation</h4>
+                                        <p class="text-xs text-gray-500">Job ID: report-2024-003</p>
+                                    </div>
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Processing</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+                                    <div class="bg-purple-500 h-2 rounded-full progress-bar" style="width: 34%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500">
+                                    <span>34% complete</span>
+                                    <span>Est. 8m remaining</span>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Email Batch Processing</h4>
+                                        <p class="text-xs text-gray-500">Job ID: email-2024-045</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Sending</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+                                    <div class="bg-green-500 h-2 rounded-full progress-bar" style="width: 89%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500">
+                                    <span>847 of 950 sent</span>
+                                    <span>Est. 1m remaining</span>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Database Cleanup</h4>
+                                        <p class="text-xs text-gray-500">Job ID: cleanup-2024-012</p>
+                                    </div>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Starting</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+                                    <div class="bg-yellow-500 h-2 rounded-full progress-bar" style="width: 5%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500">
+                                    <span>Initializing...</span>
+                                    <span>Est. 15m total</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job History Table -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Job History</h3>
+                            <div class="flex items-center space-x-2">
+                                <select class="text-sm border border-gray-300 rounded-md px-2 py-1">
+                                    <option>All Jobs</option>
+                                    <option>Failed Only</option>
+                                    <option>Completed Only</option>
+                                    <option>Long Running</option>
+                                </select>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded hover:bg-gray-200">
+                                    <i class="fas fa-sync mr-1"></i>Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Started</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Provider Network Update</div>
+                                            <div class="text-sm text-gray-500">update-network-2024-089</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Data Sync
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            <i class="fas fa-check mr-1"></i>Completed
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">4m 23s</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">5 min ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-redo"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Weekly Quality Report</div>
+                                            <div class="text-sm text-gray-500">quality-report-2024-w12</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                            Report
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            <i class="fas fa-times mr-1"></i>Failed
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">12m 08s</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">15 min ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-bug"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-redo"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Email Notification Batch</div>
+                                            <div class="text-sm text-gray-500">email-batch-2024-134</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Email
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            <i class="fas fa-check mr-1"></i>Completed
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2m 14s</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1 hour ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-redo"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="bg-white px-6 py-3 border-t border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing <span class="font-medium">1</span> to <span class="font-medium">25</span> of <span class="font-medium">1,247</span> jobs
+                                </p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">Previous</button>
+                                <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded">1</button>
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">3</button>
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Jobs Section -->
+            <div id="all-jobs-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">All Jobs</h1>
+                            <p class="text-gray-600 mt-1">Consolidated view of all system jobs with status and execution details</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                                <i class="fas fa-sync mr-2"></i>Refresh All
+                            </button>
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                                <i class="fas fa-plus mr-2"></i>Schedule Job
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Categories Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Credentialing Jobs</p>
+                                <p class="text-2xl font-bold text-blue-600">23</p>
+                                <p class="text-xs text-gray-500 mt-1">18 running, 5 queued</p>
+                            </div>
+                            <i class="fas fa-user-check text-blue-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Mass Processing</p>
+                                <p class="text-2xl font-bold text-green-600">20</p>
+                                <p class="text-xs text-gray-500 mt-1">12 load, 8 update</p>
+                            </div>
+                            <i class="fas fa-database text-green-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Auto Calculations</p>
+                                <p class="text-2xl font-bold text-yellow-600">6</p>
+                                <p class="text-xs text-gray-500 mt-1">4 scheduled, 2 on-demand</p>
+                            </div>
+                            <i class="fas fa-calculator text-yellow-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Failed Jobs</p>
+                                <p class="text-2xl font-bold text-red-600">8</p>
+                                <p class="text-xs text-gray-500 mt-1">Requires attention</p>
+                            </div>
+                            <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Jobs Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">All System Jobs</h3>
+                            <div class="flex space-x-2">
+                                <select class="text-sm border border-gray-300 rounded-md px-2 py-1">
+                                    <option>All Types</option>
+                                    <option>Credentialing</option>
+                                    <option>Mass Load</option>
+                                    <option>Mass Update</option>
+                                    <option>Auto Calc</option>
+                                </select>
+                                <select class="text-sm border border-gray-300 rounded-md px-2 py-1">
+                                    <option>All Status</option>
+                                    <option>Running</option>
+                                    <option>Completed</option>
+                                    <option>Failed</option>
+                                    <option>Queued</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Job Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Frequency</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Run</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Provider Recredentialing</div>
+                                            <div class="text-sm text-gray-500">cred-recert-2024-089</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Credentialing</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Daily</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2 hours ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">SUCCESS</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900"><i class="fas fa-eye"></i></button>
+                                            <button class="text-green-600 hover:text-green-900"><i class="fas fa-play"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Provider Bulk Upload</div>
+                                            <div class="text-sm text-gray-500">mass-load-2024-034</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Mass Load</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">On-demand</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 day ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">SUCCESS</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900"><i class="fas fa-eye"></i></button>
+                                            <button class="text-gray-600 hover:text-gray-900"><i class="fas fa-download"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cred Jobs Section -->
+            <div id="cred-jobs-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Credentialing Jobs</h1>
+                            <p class="text-gray-600 mt-1">Background credentialing processes: validation, recredentialing, and status updates</p>
+                        </div>
+                        <button class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                            <i class="fas fa-plus mr-2"></i>New Cred Job
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cred Job Types -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Validation Jobs</h3>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">12 Active</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">License Validation</span>
+                                <span class="text-green-600">Running</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Education Verification</span>
+                                <span class="text-blue-600">Queued</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Background Check</span>
+                                <span class="text-green-600">Complete</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Recredentialing Jobs</h3>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">8 Active</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Annual Renewal</span>
+                                <span class="text-green-600">Processing</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Specialty Update</span>
+                                <span class="text-yellow-600">Pending</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Insurance Renewal</span>
+                                <span class="text-green-600">Complete</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Status Update Jobs</h3>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">3 Active</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Network Status Sync</span>
+                                <span class="text-green-600">Running</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Provider Status Update</span>
+                                <span class="text-green-600">Complete</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Compliance Check</span>
+                                <span class="text-blue-600">Scheduled</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mass Load Jobs Section -->
+            <div id="mass-load-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Mass Load Jobs</h1>
+                            <p class="text-gray-600 mt-1">Process large data uploads for initial setup or bulk onboarding</p>
+                        </div>
+                        <button class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                            <i class="fas fa-upload mr-2"></i>New Mass Load
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mass Load Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-600">12,450</div>
+                            <div class="text-sm text-gray-600">Records Loaded Today</div>
+                            <div class="text-xs text-green-600 mt-1">↑ 15% vs yesterday</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600">8</div>
+                            <div class="text-sm text-gray-600">Active Load Jobs</div>
+                            <div class="text-xs text-blue-600 mt-1">2 in progress</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-yellow-600">99.2%</div>
+                            <div class="text-sm text-gray-600">Success Rate</div>
+                            <div class="text-xs text-gray-500 mt-1">156 failed records</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-purple-600">4.2GB</div>
+                            <div class="text-sm text-gray-600">Data Processed</div>
+                            <div class="text-xs text-gray-500 mt-1">This week</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Mass Load Jobs -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Mass Load Jobs</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-upload text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Provider Initial Setup</h4>
+                                        <p class="text-sm text-gray-500">2,340 providers • 156MB file size</p>
+                                        <div class="w-64 bg-gray-200 rounded-full h-2 mt-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">85% Complete</span>
+                                    <p class="text-xs text-gray-500 mt-1">Est. 5m remaining</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-database text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Network Configuration Load</h4>
+                                        <p class="text-sm text-gray-500">847 configurations • 23MB file size</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Completed</span>
+                                    <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mass Update Jobs Section -->
+            <div id="mass-update-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Mass Update Jobs</h1>
+                            <p class="text-gray-600 mt-1">Bulk updates to existing records: demographics, network status, tax, location</p>
+                        </div>
+                        <button class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                            <i class="fas fa-edit mr-2"></i>New Mass Update
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Update Categories -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-user text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-900">5</div>
+                            <div class="text-sm text-gray-600">Demographics Updates</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-network-wired text-green-600 text-xl"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-900">3</div>
+                            <div class="text-sm text-gray-600">Network Status</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-receipt text-yellow-600 text-xl"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-900">2</div>
+                            <div class="text-sm text-gray-600">Tax Information</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-map-marker-alt text-purple-600 text-xl"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-900">2</div>
+                            <div class="text-sm text-gray-600">Location Updates</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Mass Updates -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Active Mass Update Jobs</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">Provider Demographics Sync</h4>
+                                    <p class="text-sm text-gray-500">Update 1,247 provider records with new demographic data</p>
+                                    <div class="flex items-center mt-2 text-xs text-gray-400">
+                                        <span class="mr-4">Started: 30 minutes ago</span>
+                                        <span class="mr-4">Progress: 67%</span>
+                                        <span>Records: 834/1,247</span>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Processing</span>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">Network Status Batch Update</h4>
+                                    <p class="text-sm text-gray-500">Update network participation status for 456 providers</p>
+                                    <div class="flex items-center mt-2 text-xs text-gray-400">
+                                        <span class="mr-4">Completed: 1 hour ago</span>
+                                        <span class="mr-4">Success: 100%</span>
+                                        <span>Records: 456/456</span>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto Calc Jobs Section -->
+            <div id="auto-calc-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Auto Calc Jobs</h1>
+                            <p class="text-gray-600 mt-1">Automated calculation processes based on configured rules (scheduled/on-demand)</p>
+                        </div>
+                        <button class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                            <i class="fas fa-calculator mr-2"></i>Run Calculation
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Auto Calc Types -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Scheduled Calculations</h3>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">4 Active</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="border border-gray-200 rounded-lg p-3">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-900">Provider Tier Calculation</span>
+                                    <span class="text-xs text-gray-500">Daily at 6:00 AM</span>
+                                </div>
+                                <div class="text-xs text-gray-600">Last run: 2 hours ago • Next: Tomorrow 6:00 AM</div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Success</span>
+                                    <span class="text-xs text-gray-500">1,247 providers processed</span>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-3">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-900">Network Coverage Analysis</span>
+                                    <span class="text-xs text-gray-500">Weekly on Monday</span>
+                                </div>
+                                <div class="text-xs text-gray-600">Last run: 3 days ago • Next: Monday 8:00 AM</div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Success</span>
+                                    <span class="text-xs text-gray-500">23 networks analyzed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">On-Demand Calculations</h3>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">2 Running</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="border border-yellow-200 bg-yellow-50 rounded-lg p-3">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-900">Quality Score Update</span>
+                                    <span class="text-xs text-yellow-600">Running</span>
+                                </div>
+                                <div class="text-xs text-gray-600">Started: 15 minutes ago • Progress: 34%</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 34%"></div>
+                                </div>
+                            </div>
+                            <div class="border border-blue-200 bg-blue-50 rounded-lg p-3">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-900">Risk Assessment Calc</span>
+                                    <span class="text-xs text-blue-600">Queued</span>
+                                </div>
+                                <div class="text-xs text-gray-600">Requested: 5 minutes ago • Est. start: 2 minutes</div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <span class="text-xs text-gray-500">456 records to process</span>
+                                    <button class="text-red-600 hover:text-red-700 text-xs">
+                                        <i class="fas fa-times mr-1"></i>Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for Monitor Jobs
+        function showJobSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-gray-50', 'text-gray-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-gray-50', 'text-gray-700');
+        }
+
+        // Initialize with dashboard view
+        document.addEventListener('DOMContentLoaded', function() {
+            showJobSection('dashboard');
+        });
+        // Job Execution Trends Chart - Fixed sizing
+        const jobCtx = document.getElementById('jobChart');
+        if (jobCtx) {
+            jobCtx.width = 400;
+            jobCtx.height = 200;
+            
+            new Chart(jobCtx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                    datasets: [{
+                        label: 'Completed Jobs',
+                        data: [45, 32, 78, 120, 95, 67, 52],
+                        borderColor: '#4b5563',
+                        backgroundColor: 'rgba(75, 85, 99, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3
+                    }, {
+                        label: 'Failed Jobs',
+                        data: [2, 1, 3, 5, 4, 2, 1],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    layout: {
+                        padding: 5
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 130,
+                            grid: { color: '#f3f4f6' },
+                            ticks: {
+                                stepSize: 25,
+                                maxTicksLimit: 6
+                            }
+                        },
+                        x: {
+                            grid: { color: '#f3f4f6' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, padding: 15 }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Auto-refresh every 5 seconds for real-time updates
+        setInterval(function() {
+            // In a real application, this would fetch fresh data
+            console.log('Refreshing job status...');
+        }, 5000);
+
+        // Update progress bars dynamically
+        function updateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const currentWidth = parseInt(bar.style.width);
+                if (currentWidth < 100) {
+                    bar.style.width = Math.min(currentWidth + Math.random() * 5, 100) + '%';
+                }
+            });
+        }
+        
+        setInterval(updateProgressBars, 3000);
+    </script>
+</body>
+</html>

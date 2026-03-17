@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Service Request Dashboard - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .kanban-column { min-height: 500px; }
+        .sortable-ghost { opacity: 0.4; }
+        .sortable-chosen { transform: rotate(5deg); }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .kanban-column { min-height: 400px; }
+        }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .desktop-nav { display: none !important; }
+            .kanban-board { grid-template-columns: 1fr; gap: 1rem; }
+        }
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .kanban-board { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-violet-600 rounded flex items-center justify-center hover:bg-violet-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-violet-500 text-violet-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">SR Dashboard</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Analytics</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Reports</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search service requests..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Alex+Chen&background=8b5cf6&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Alex Chen</span>
+                        <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn fixed top-4 left-4 z-50 p-2 bg-violet-600 text-white rounded-md md:hidden" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Enhanced Sidebar -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 fixed md:relative z-40 h-full transition-transform duration-300">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">SR Dashboard</h2>
+                <nav class="space-y-1">
+                    <a href="#dashboard" class="bg-violet-50 text-violet-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSRSection('dashboard')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#all-sr" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSRSection('all-sr')">
+                        <i class="fas fa-list mr-3"></i>
+                        All SR Created
+                    </a>
+                    <a href="#my-queue" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSRSection('my-queue')">
+                        <i class="fas fa-user-clock mr-3"></i>
+                        My SR Queue
+                    </a>
+                    <a href="#demographics" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSRSection('demographics')">
+                        <i class="fas fa-user-edit mr-3"></i>
+                        Demographics Update
+                    </a>
+                    <a href="#phone-change" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSRSection('phone-change')">
+                        <i class="fas fa-phone mr-3"></i>
+                        Phone Number Change
+                    </a>
+                    <a href="#location-change" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSRSection('location-change')">
+                        <i class="fas fa-map-marker-alt mr-3"></i>
+                        Location Change
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 overflow-y-auto md:ml-0">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content p-4 md:p-6">
+                <!-- Page Header -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Service Request Dashboard</h1>
+                            <p class="text-gray-600 mt-1">View, track, and manage service requests with status summaries and progress monitoring</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex bg-white border border-gray-300 rounded-md overflow-hidden">
+                                <button class="px-3 py-2 bg-violet-50 text-violet-700 text-sm font-medium">
+                                    <i class="fas fa-th mr-1"></i>Kanban
+                                </button>
+                                <button class="px-3 py-2 text-gray-600 hover:bg-gray-50 text-sm font-medium">
+                                    <i class="fas fa-list mr-1"></i>List
+                                </button>
+                                <button class="px-3 py-2 text-gray-600 hover:bg-gray-50 text-sm font-medium">
+                                    <i class="fas fa-calendar mr-1"></i>Timeline
+                                </button>
+                            </div>
+                            <button class="bg-violet-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-violet-700">
+                                <i class="fas fa-plus mr-2"></i>New Request
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">New Requests</p>
+                                <p class="text-2xl font-bold text-gray-900">24</p>
+                            </div>
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-inbox text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-yellow-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">In Progress</p>
+                                <p class="text-2xl font-bold text-gray-900">18</p>
+                            </div>
+                            <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-yellow-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-purple-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Review</p>
+                                <p class="text-2xl font-bold text-gray-900">12</p>
+                            </div>
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-eye text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Completed</p>
+                                <p class="text-2xl font-bold text-gray-900">47</p>
+                            </div>
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kanban Board -->
+                <div class="kanban-board grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                    <!-- New Requests Column -->
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="px-4 py-3 border-b border-gray-200 bg-blue-50">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium text-gray-900">New Requests</h3>
+                                <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">24</span>
+                            </div>
+                        </div>
+                        <div class="p-4 kanban-column" id="new-requests">
+                            <!-- Service Request Cards -->
+                            <div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm hover:shadow-md transition-shadow cursor-move">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">SR-2024-001</span>
+                                        <span class="ml-2 bg-red-100 text-red-800 text-xs px-2 py-1 rounded">High</span>
+                                    </div>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                                <h4 class="text-sm font-medium text-gray-900 mb-2">Provider Credential Update</h4>
+                                <p class="text-xs text-gray-600 mb-3">Update medical license information for Dr. Johnson</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img class="h-6 w-6 rounded-full" src="https://ui-avatars.com/api/?name=Sarah+Wilson&background=3b82f6&color=fff" alt="">
+                                        <span class="ml-2 text-xs text-gray-600">Sarah W.</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">2h ago</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm hover:shadow-md transition-shadow cursor-move">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">SR-2024-002</span>
+                                        <span class="ml-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Medium</span>
+                                    </div>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                                <h4 class="text-sm font-medium text-gray-900 mb-2">Network Directory Update</h4>
+                                <p class="text-xs text-gray-600 mb-3">Add new practice location to provider network</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img class="h-6 w-6 rounded-full" src="https://ui-avatars.com/api/?name=Mike+Johnson&background=10b981&color=fff" alt="">
+                                        <span class="ml-2 text-xs text-gray-600">Mike J.</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">4h ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- In Progress Column -->
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="px-4 py-3 border-b border-gray-200 bg-yellow-50">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium text-gray-900">In Progress</h3>
+                                <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">18</span>
+                            </div>
+                        </div>
+                        <div class="p-4 kanban-column" id="in-progress">
+                            <div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm hover:shadow-md transition-shadow cursor-move">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded">SR-2024-003</span>
+                                        <span class="ml-2 bg-red-100 text-red-800 text-xs px-2 py-1 rounded">High</span>
+                                    </div>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                                <h4 class="text-sm font-medium text-gray-900 mb-2">Malpractice Insurance Verification</h4>
+                                <p class="text-xs text-gray-600 mb-3">Verify current malpractice coverage for Memorial Hospital</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img class="h-6 w-6 rounded-full" src="https://ui-avatars.com/api/?name=Emma+Davis&background=f59e0b&color=fff" alt="">
+                                        <span class="ml-2 text-xs text-gray-600">Emma D.</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">1d ago</span>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 65%"></div>
+                                    </div>
+                                    <span class="text-xs text-gray-500 mt-1">65% complete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review Column -->
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="px-4 py-3 border-b border-gray-200 bg-purple-50">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium text-gray-900">Review</h3>
+                                <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full">12</span>
+                            </div>
+                        </div>
+                        <div class="p-4 kanban-column" id="review">
+                            <div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm hover:shadow-md transition-shadow cursor-move">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded">SR-2024-004</span>
+                                        <span class="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Low</span>
+                                    </div>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                                <h4 class="text-sm font-medium text-gray-900 mb-2">Specialty Board Certification</h4>
+                                <p class="text-xs text-gray-600 mb-3">Review updated cardiology board certification</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img class="h-6 w-6 rounded-full" src="https://ui-avatars.com/api/?name=David+Kim&background=8b5cf6&color=fff" alt="">
+                                        <span class="ml-2 text-xs text-gray-600">David K.</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">2d ago</span>
+                                </div>
+                                <div class="mt-3 flex space-x-2">
+                                    <button class="flex-1 bg-green-100 text-green-800 text-xs py-1 px-2 rounded hover:bg-green-200">
+                                        <i class="fas fa-check mr-1"></i>Approve
+                                    </button>
+                                    <button class="flex-1 bg-red-100 text-red-800 text-xs py-1 px-2 rounded hover:bg-red-200">
+                                        <i class="fas fa-times mr-1"></i>Reject
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Completed Column -->
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="px-4 py-3 border-b border-gray-200 bg-green-50">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium text-gray-900">Completed</h3>
+                                <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">47</span>
+                            </div>
+                        </div>
+                        <div class="p-4 kanban-column" id="completed">
+                            <div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm hover:shadow-md transition-shadow cursor-move opacity-75">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">SR-2024-005</span>
+                                        <span class="ml-2 bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Closed</span>
+                                    </div>
+                                    <i class="fas fa-check-circle text-green-500"></i>
+                                </div>
+                                <h4 class="text-sm font-medium text-gray-900 mb-2">Provider Contact Update</h4>
+                                <p class="text-xs text-gray-600 mb-3">Updated phone and email for clinic practice</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img class="h-6 w-6 rounded-full" src="https://ui-avatars.com/api/?name=Lisa+Chen&background=10b981&color=fff" alt="">
+                                        <span class="ml-2 text-xs text-gray-600">Lisa C.</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">3d ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All SR Created Section -->
+            <div id="all-sr-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">All SR Created</h1>
+                            <p class="text-gray-600 mt-1">All service requests created in the system regardless of assignment or status</p>
+                        </div>
+                        <button class="bg-violet-600 text-white px-4 py-2 rounded-md hover:bg-violet-700">
+                            <i class="fas fa-plus mr-2"></i>Create New SR
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SR Search and Filters -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Search & Filter Service Requests</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">SR Number</label>
+                            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-violet-500 focus:border-violet-500" placeholder="SR-2024-XXX">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Request Type</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-violet-500 focus:border-violet-500">
+                                <option>All Types</option>
+                                <option>Demographics Update</option>
+                                <option>Phone Number Change</option>
+                                <option>Location Change</option>
+                                <option>Credential Update</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-violet-500 focus:border-violet-500">
+                                <option>All Statuses</option>
+                                <option>New</option>
+                                <option>In Progress</option>
+                                <option>Review</option>
+                                <option>Completed</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-violet-600 text-white px-4 py-2 rounded-md hover:bg-violet-700">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Service Requests Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">All Service Requests (1,247 total)</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SR Number</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Request Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">SR-2024-001</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Demographics Update</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">High</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Sarah Wilson</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">New</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2 hours ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900"><i class="fas fa-eye"></i></button>
+                                            <button class="text-green-600 hover:text-green-900"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My SR Queue Section -->
+            <div id="my-queue-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">My SR Queue</h1>
+                            <p class="text-gray-600 mt-1">Service requests assigned to you - focus on your pending and active work</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Queue Stats -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600">8</div>
+                            <div class="text-sm text-gray-600">Assigned to Me</div>
+                            <div class="text-xs text-gray-500 mt-1">New assignments</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-yellow-600">5</div>
+                            <div class="text-sm text-gray-600">In Progress</div>
+                            <div class="text-xs text-gray-500 mt-1">Currently working</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-purple-600">3</div>
+                            <div class="text-sm text-gray-600">Pending Review</div>
+                            <div class="text-xs text-gray-500 mt-1">Awaiting approval</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-600">24</div>
+                            <div class="text-sm text-gray-600">Completed</div>
+                            <div class="text-xs text-gray-500 mt-1">This month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Active Requests -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">My Active Service Requests</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 hover:bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-user-edit text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Provider Demographics Update - Dr. Martinez</h4>
+                                        <p class="text-sm text-gray-500">Update name and address information</p>
+                                        <div class="flex items-center mt-1 text-xs text-gray-400">
+                                            <span class="mr-4">SR-2024-089</span>
+                                            <span class="mr-4">Created: 2 hours ago</span>
+                                            <span>Due: Tomorrow</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">New</span>
+                                    <button class="text-blue-600 hover:text-blue-700">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demographics Update Section -->
+            <div id="demographics-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Demographics Update Requests</h1>
+                            <p class="text-gray-600 mt-1">Provider demographic changes: name updates, address updates, and other profile information</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demographics Request Types -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-signature text-blue-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">12 Active</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Name Updates</h3>
+                        <p class="text-sm text-gray-600 mb-4">Legal name changes and provider name corrections</p>
+                        <div class="text-sm text-gray-500">
+                            <div class="flex justify-between mb-1">
+                                <span>Pending:</span>
+                                <span>8</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>In Review:</span>
+                                <span>4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-home text-green-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">18 Active</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Address Updates</h3>
+                        <p class="text-sm text-gray-600 mb-4">Home and mailing address changes for providers</p>
+                        <div class="text-sm text-gray-500">
+                            <div class="flex justify-between mb-1">
+                                <span>Pending:</span>
+                                <span>12</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>In Review:</span>
+                                <span>6</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user text-purple-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">7 Active</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Profile Updates</h3>
+                        <p class="text-sm text-gray-600 mb-4">Other demographic information and profile changes</p>
+                        <div class="text-sm text-gray-500">
+                            <div class="flex justify-between mb-1">
+                                <span>Pending:</span>
+                                <span>4</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>In Review:</span>
+                                <span>3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phone Number Change Section -->
+            <div id="phone-change-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Phone Number Change Requests</h1>
+                            <p class="text-gray-600 mt-1">Provider phone number updates with quick tracking for modification requests</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone Change Requests -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Active Phone Change Requests</h3>
+                            <span class="text-sm text-gray-500">23 requests</span>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 hover:bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-phone text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Dr. Emily Johnson - Main Office</h4>
+                                        <p class="text-sm text-gray-500">Change from (555) 123-4567 to (555) 987-6543</p>
+                                        <div class="flex items-center mt-1 text-xs text-gray-400">
+                                            <span class="mr-4">SR-2024-156</span>
+                                            <span class="mr-4">Primary phone update</span>
+                                            <span>Requested: 1 hour ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
+                                    <button class="text-blue-600 hover:text-blue-700">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 hover:bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-mobile-alt text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Metro Health Clinic - Emergency Line</h4>
+                                        <p class="text-sm text-gray-500">Add emergency contact number (555) 555-HELP</p>
+                                        <div class="flex items-center mt-1 text-xs text-gray-400">
+                                            <span class="mr-4">SR-2024-157</span>
+                                            <span class="mr-4">Emergency contact addition</span>
+                                            <span>Requested: 3 hours ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Approved</span>
+                                    <button class="text-green-600 hover:text-green-700">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Change Section -->
+            <div id="location-change-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Location Change Requests</h1>
+                            <p class="text-gray-600 mt-1">Provider location updates: practice address or service location changes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Change Types -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-building text-blue-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">8 Active</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Practice Address Changes</h3>
+                        <p class="text-sm text-gray-600 mb-4">Primary practice location and address modifications</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-900">Dr. Sarah Chen</span>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">Pending</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-900">Westside Clinic</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">In Review</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt text-green-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">5 Active</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Service Location Changes</h3>
+                        <p class="text-sm text-gray-600 mb-4">Additional service locations and satellite offices</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-900">Memorial Hospital</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Completed</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-900">Metro Health Center</span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">Review</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for SR Dashboard
+        function showSRSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-violet-50', 'text-violet-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-violet-50', 'text-violet-700');
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Initialize with dashboard view
+        document.addEventListener('DOMContentLoaded', function() {
+            showSRSection('dashboard');
+        });
+        // Initialize Sortable for each column
+        const columns = ['new-requests', 'in-progress', 'review', 'completed'];
+        
+        columns.forEach(columnId => {
+            new Sortable(document.getElementById(columnId), {
+                group: 'kanban',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                onEnd: function(evt) {
+                    // Handle card movement between columns
+                    console.log('Card moved from', evt.from.id, 'to', evt.to.id);
+                    // Here you would typically send an API call to update the backend
+                }
+            });
+        });
+
+        // Add click handlers for quick actions
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.bg-green-100')) {
+                console.log('Approve action clicked');
+                // Handle approve action
+            }
+            if (e.target.closest('.bg-red-100')) {
+                console.log('Reject action clicked');
+                // Handle reject action
+            }
+        });
+    </script>
+</body>
+</html>

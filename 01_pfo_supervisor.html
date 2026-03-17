@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced PFO Supervisor Dashboard - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .chart-container { height: 200px; }
+        }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .desktop-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-blue-600 rounded flex items-center justify-center hover:bg-blue-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="desktop-nav hidden md:ml-6 md:flex md:space-x-4 lg:space-x-8">
+                        <a href="#" class="border-blue-500 text-blue-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Dashboard</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Providers</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Reports</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-2 md:space-x-4">
+                    <button class="p-2 text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=John+Doe&background=3b82f6&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">John Doe</span>
+                        <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-md md:hidden" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Enhanced Sidebar -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 fixed md:relative z-40 h-full transition-transform duration-300">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">PFO Supervisor</h2>
+                <nav class="space-y-1">
+                    <a href="#dashboard" class="bg-blue-50 text-blue-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSection('dashboard')">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#workflow" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSection('workflow')">
+                        <i class="fas fa-tasks mr-3"></i>
+                        Workflow & Approval
+                        <span class="ml-auto bg-red-500 text-white rounded-full px-2 py-1 text-xs">5</span>
+                    </a>
+                    <a href="#analytics" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSection('analytics')">
+                        <i class="fas fa-chart-bar mr-3"></i>
+                        Reporting & Analytics
+                    </a>
+                    <a href="#search" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSection('search')">
+                        <i class="fas fa-search mr-3"></i>
+                        Advanced Search
+                    </a>
+                    <a href="#integration" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSection('integration')">
+                        <i class="fas fa-plug mr-3"></i>
+                        Integration & API
+                    </a>
+                    <a href="#documents" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSection('documents')">
+                        <i class="fas fa-folder-open mr-3"></i>
+                        Document Management
+                    </a>
+                    <a href="#admin" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSection('admin')">
+                        <i class="fas fa-cogs mr-3"></i>
+                        System Administration
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 overflow-y-auto md:ml-0">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content p-4 md:p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">PFO Supervisor Dashboard</h1>
+                            <p class="text-gray-600 mt-1">Monitor team performance and workflow efficiency</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <select class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>March 2026</option>
+                                <option>February 2026</option>
+                                <option>January 2026</option>
+                            </select>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                                <i class="fas fa-download mr-2"></i>Export Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user-check text-blue-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Active Providers</p>
+                                <p class="text-2xl font-bold text-gray-900">1,247</p>
+                                <p class="text-xs text-green-600">
+                                    <i class="fas fa-arrow-up"></i> 12% from last month
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-clock text-green-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Avg Processing Time</p>
+                                <p class="text-2xl font-bold text-gray-900">3.2 days</p>
+                                <p class="text-xs text-green-600">
+                                    <i class="fas fa-arrow-down"></i> 18% improvement
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Pending Reviews</p>
+                                <p class="text-2xl font-bold text-gray-900">89</p>
+                                <p class="text-xs text-red-600">
+                                    <i class="fas fa-arrow-up"></i> 5 urgent items
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-percentage text-purple-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Completion Rate</p>
+                                <p class="text-2xl font-bold text-gray-900">94.6%</p>
+                                <p class="text-xs text-green-600">
+                                    <i class="fas fa-arrow-up"></i> Above target
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance and Workflow -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <!-- Performance Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Team Performance Trend</h3>
+                            <div class="flex space-x-2">
+                                <button class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">7D</button>
+                                <button class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">30D</button>
+                                <button class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">90D</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Workflow Status -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Workflow Status</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-900">Completed</span>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">156</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-900">In Progress</span>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">43</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-900">Pending Review</span>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">28</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-900">Requires Action</span>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">12</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Work Items -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">My Work Items</h3>
+                                <p class="text-sm text-gray-600 mt-1">PFO Supervisor and PFO Specialist team maintains data for Professional and Organization</p>
+                            </div>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                                <i class="fas fa-plus mr-2"></i>New Item
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Search Filters -->
+                    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Profile Type</label>
+                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option>All Types</option>
+                                    <option>Professional</option>
+                                    <option>Organization</option>
+                                    <option>Facility</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Provider Status</label>
+                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option>All Statuses</option>
+                                    <option>Active</option>
+                                    <option>Pending</option>
+                                    <option>Under Review</option>
+                                    <option>Inactive</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Organization</label>
+                                <input type="text" placeholder="Search organization..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Provider ID</label>
+                                <input type="text" placeholder="Enter Provider ID..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">NPI</label>
+                                <input type="text" placeholder="Enter NPI..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 mt-4">
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                            <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-200">
+                                <i class="fas fa-times mr-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Work Items Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profile Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NPI</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Records Created</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Activity</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="openEditProfile('PRV001425')">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Professional
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Memorial Hospital</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-blue-600 hover:text-blue-900 font-medium text-sm" onclick="openEditProfile('PRV001425')">
+                                            PRV001425
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1234567890</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Complete
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/15/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Sarah Wilson</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2 hours ago</td>
+                                </tr>
+                                
+                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="openEditProfile('ORG003278')">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                            Organization
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Under Review
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Springfield Clinic</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-blue-600 hover:text-blue-900 font-medium text-sm" onclick="openEditProfile('ORG003278')">
+                                            ORG003278
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">-</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Pending
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/14/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Mike Johnson</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5 hours ago</td>
+                                </tr>
+                                
+                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="openEditProfile('PRV002156')">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Professional
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">City Medical Center</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="#" class="text-blue-600 hover:text-blue-900 font-medium text-sm" onclick="openEditProfile('PRV002156')">
+                                            PRV002156
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">9876543210</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            Requires Action
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/13/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Emma Davis</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 day ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Edit Profile Modal (Hidden by default) -->
+                <div id="editProfileModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                        
+                        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Edit Profile</h3>
+                                    <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeEditProfile()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Enhanced Profile Form -->
+                                <form class="space-y-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Provider ID</label>
+                                            <input type="text" id="providerId" value="PRV001425" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50" readonly>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Provider Name</label>
+                                            <input type="text" value="Dr. Sarah Johnson" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Provider Type</label>
+                                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                <option>Professional</option>
+                                                <option>Organization</option>
+                                                <option>Facility</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- License Section -->
+                                    <div class="border-t border-gray-200 pt-6">
+                                        <h4 class="text-md font-medium text-gray-900 mb-4">
+                                            <i class="fas fa-id-card mr-2"></i>License Information
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">License Number</label>
+                                                <input type="text" value="LIC123456789" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">License State</label>
+                                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                    <option>New York</option>
+                                                    <option>California</option>
+                                                    <option>Texas</option>
+                                                    <option>Florida</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Education & Training Section -->
+                                    <div class="border-t border-gray-200 pt-6">
+                                        <h4 class="text-md font-medium text-gray-900 mb-4">
+                                            <i class="fas fa-graduation-cap mr-2"></i>Education & Training
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Medical School</label>
+                                                <input type="text" value="Johns Hopkins School of Medicine" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
+                                                <input type="text" value="2015" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Specialty Section -->
+                                    <div class="border-t border-gray-200 pt-6">
+                                        <h4 class="text-md font-medium text-gray-900 mb-4">
+                                            <i class="fas fa-stethoscope mr-2"></i>Specialty Information
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Primary Specialty</label>
+                                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                    <option>Cardiology</option>
+                                                    <option>Neurology</option>
+                                                    <option>Orthopedics</option>
+                                                    <option>Pediatrics</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Board Certification</label>
+                                                <input type="text" value="American Board of Internal Medicine" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Hospital Affiliations -->
+                                    <div class="border-t border-gray-200 pt-6">
+                                        <h4 class="text-md font-medium text-gray-900 mb-4">
+                                            <i class="fas fa-hospital mr-2"></i>Hospital Affiliations
+                                        </h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900">Memorial Hospital</p>
+                                                    <p class="text-xs text-gray-500">Primary Affiliation</p>
+                                                </div>
+                                                <button class="text-red-600 hover:text-red-700">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            <button type="button" class="w-full border border-dashed border-gray-300 rounded-lg p-3 text-gray-500 hover:border-gray-400 hover:text-gray-700">
+                                                <i class="fas fa-plus mr-2"></i>Add Hospital Affiliation
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                    Save Changes
+                                </button>
+                                <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeEditProfile()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow & Approval Management Section -->
+            <div id="workflow-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Workflow & Approval Management</h1>
+                    <p class="text-gray-600 mt-1">Multi-level approval workflows with comprehensive audit trails</p>
+                </div>
+
+                <!-- Pending Approvals -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Pending Approvals</h3>
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium">5 Items</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Dr. Sarah Johnson - License Update</h4>
+                                        <p class="text-sm text-gray-500">Medical License renewal for CA state • Created: 2 hours ago</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                            <i class="fas fa-check mr-1"></i>Approve
+                                        </button>
+                                        <button class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                            <i class="fas fa-times mr-1"></i>Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Metro Health Center - Network Change</h4>
+                                        <p class="text-sm text-gray-500">In-Network status modification • Created: 4 hours ago</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                            <i class="fas fa-check mr-1"></i>Approve
+                                        </button>
+                                        <button class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                            <i class="fas fa-times mr-1"></i>Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Workflow Statistics -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Workflow Statistics</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600">24</div>
+                                <div class="text-sm text-green-600">Approved Today</div>
+                            </div>
+                            <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                                <div class="text-2xl font-bold text-yellow-600">5</div>
+                                <div class="text-sm text-yellow-600">Pending Review</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Trail -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Activity & Audit Trail</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 flex items-start space-x-4">
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Workflow Approved</p>
+                                <p class="text-sm text-gray-500">Dr. Sarah Johnson license update approved by Senior Supervisor</p>
+                                <p class="text-xs text-gray-400 mt-1">Today at 3:45 PM</p>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 flex items-start space-x-4">
+                            <div class="bg-blue-100 p-2 rounded-full">
+                                <i class="fas fa-plus text-blue-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Workflow Created</p>
+                                <p class="text-sm text-gray-500">Metro Health Center network change initiated by Jane Smith</p>
+                                <p class="text-xs text-gray-400 mt-1">Today at 2:30 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reporting & Analytics Section -->
+            <div id="analytics-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Reporting & Analytics Dashboard</h1>
+                            <p class="text-gray-600 mt-1">Comprehensive insights and performance metrics</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <select class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>This Week</option>
+                                <option>This Month</option>
+                                <option>This Quarter</option>
+                            </select>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700">
+                                <i class="fas fa-download mr-2"></i>Export PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                        <div class="text-2xl font-bold text-blue-600">1,247</div>
+                        <div class="text-sm text-gray-600">Active Practitioners</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> +23 this week
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                        <div class="text-2xl font-bold text-green-600">156</div>
+                        <div class="text-sm text-gray-600">Active Organizations</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> +5 this week
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                        <div class="text-2xl font-bold text-yellow-600">89</div>
+                        <div class="text-sm text-gray-600">Licenses Expiring (30 days)</div>
+                        <div class="text-xs text-red-600 mt-1">
+                            <i class="fas fa-exclamation-triangle"></i> Needs attention
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+                        <div class="text-2xl font-bold text-purple-600">94.2%</div>
+                        <div class="text-sm text-gray-600">Data Accuracy Rate</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-check"></i> Above target
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Reports -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Available Reports</h3>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">
+                                <i class="fas fa-plus mr-2"></i>Create Custom Report
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Practitioner Compliance Report</h4>
+                                    <p class="text-sm text-gray-500">License expiration tracking</p>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Network Changes Summary</h4>
+                                    <p class="text-sm text-gray-500">In/out network modifications</p>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Workflow Performance</h4>
+                                    <p class="text-sm text-gray-500">Approval times & efficiency</p>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Search Section -->
+            <div id="search-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Advanced Search & Filtering</h1>
+                    <p class="text-gray-600 mt-1">Powerful search with bulk operations and export capabilities</p>
+                </div>
+
+                <!-- Global Search -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="relative">
+                        <input type="text" placeholder="Search practitioners, organizations, license numbers, NPI..." class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <button class="absolute right-3 top-3 text-gray-400 hover:text-blue-600">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Advanced Filters -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Advanced Filters</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Profile Type</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Types</option>
+                                <option>Practitioner</option>
+                                <option>Organization</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Statuses</option>
+                                <option>Active</option>
+                                <option>Inactive</option>
+                                <option>Pending</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All States</option>
+                                <option>California</option>
+                                <option>New York</option>
+                                <option>Texas</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Specialties</option>
+                                <option>Cardiology</option>
+                                <option>Neurology</option>
+                                <option>Pediatrics</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Network Status</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Networks</option>
+                                <option>In-Network</option>
+                                <option>Out-of-Network</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Results -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm text-gray-600">
+                                <strong>347 results found</strong> • Showing 1-25 of 347
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-yellow-600 text-white px-3 py-2 rounded text-sm hover:bg-yellow-700">
+                                    <i class="fas fa-download mr-1"></i>Export Selected
+                                </button>
+                                <button class="bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700">
+                                    <i class="fas fa-check mr-1"></i>Bulk Approve
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-center text-gray-500 py-8">
+                            <i class="fas fa-search text-4xl mb-4"></i>
+                            <p>Use the search and filters above to find specific profiles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integration & Communication Section -->
+            <div id="integration-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Integration & Communication</h1>
+                    <p class="text-gray-600 mt-1">API management and team communication tools</p>
+                </div>
+
+                <!-- API Management -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">System Notifications</h3>
+                            <div class="flex space-x-2">
+                                <button class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+                                    <i class="fas fa-plus mr-1"></i>Create Notification
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-yellow-400 bg-yellow-50 p-4 rounded">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-yellow-700">License Expiration Alert</p>
+                                        <p class="text-sm text-yellow-600">15 practitioner licenses will expire within 30 days</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-l-4 border-green-400 bg-green-50 p-4 rounded">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-check-circle text-green-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-green-700">Integration Sync Complete</p>
+                                        <p class="text-sm text-green-600">Successfully synced 247 profiles with external system</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">External Integrations</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">CAQH ProView</p>
+                                        <p class="text-xs text-gray-500">Last sync: 2 hours ago</p>
+                                    </div>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                    Configure
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Insurance APIs</p>
+                                        <p class="text-xs text-red-500">Connection failed</p>
+                                    </div>
+                                </div>
+                                <button class="text-red-600 hover:text-red-700 text-sm">
+                                    Reconnect
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Communication Center -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium text-gray-900">Team Communication</h3>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>Send Message
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <img class="w-8 h-8 rounded-full" src="https://ui-avatars.com/api/?name=Jane+Smith&background=3b82f6&color=fff" alt="Jane Smith">
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Jane Smith (PFO Specialist)</p>
+                                    <p class="text-sm text-gray-700 mt-1">Dr. Johnson's license renewal documents have been uploaded and are ready for review.</p>
+                                    <p class="text-xs text-gray-500 mt-2">2 hours ago</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <img class="w-8 h-8 rounded-full" src="https://ui-avatars.com/api/?name=You&background=green&color=fff" alt="You">
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">You (PFO Supervisor)</p>
+                                    <p class="text-sm text-gray-700 mt-1">Thanks Jane. I've reviewed the documents and they look good. Approving the renewal now.</p>
+                                    <p class="text-xs text-gray-500 mt-2">1 hour ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Document Management Section -->
+            <div id="documents-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Document Management</h1>
+                            <p class="text-gray-600 mt-1">Upload, organize, and manage documents with version control</p>
+                        </div>
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            <i class="fas fa-upload mr-2"></i>Upload Document
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Zone -->
+                <div class="bg-white rounded-lg shadow p-8 mb-6 text-center border-2 border-dashed border-gray-300 hover:border-blue-400 cursor-pointer">
+                    <div class="text-gray-400 text-4xl mb-4">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Drop files here or click to upload</h3>
+                    <p class="text-gray-500">Support for PDF, DOC, DOCX, JPG, PNG, XLS, XLSX files</p>
+                </div>
+
+                <!-- Document Categories -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4 hover:shadow-md cursor-pointer">
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <i class="fas fa-id-card text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900">Licenses</p>
+                                <p class="text-sm text-gray-500">89 documents</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 hover:shadow-md cursor-pointer">
+                        <div class="flex items-center">
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <i class="fas fa-certificate text-green-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900">Credentials</p>
+                                <p class="text-sm text-gray-500">156 documents</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 hover:shadow-md cursor-pointer">
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <i class="fas fa-file-contract text-purple-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900">Contracts</p>
+                                <p class="text-sm text-gray-500">34 documents</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 hover:shadow-md cursor-pointer">
+                        <div class="flex items-center">
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <i class="fas fa-signature text-yellow-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900">Pending Signatures</p>
+                                <p class="text-sm text-gray-500">12 documents</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Documents -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Documents</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                            <div class="flex items-center">
+                                <i class="fas fa-file-pdf text-red-500 text-xl mr-4"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Dr_Johnson_License.pdf</p>
+                                    <p class="text-sm text-gray-500">2.4 MB • Uploaded 2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Signed</span>
+                                <button class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="text-gray-600 hover:text-gray-700">
+                                    <i class="fas fa-share"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                            <div class="flex items-center">
+                                <i class="fas fa-file-word text-blue-500 text-xl mr-4"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Contract_Template.docx</p>
+                                    <p class="text-sm text-gray-500">186 KB • Uploaded 4 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Pending</span>
+                                <button class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-signature"></i>
+                                </button>
+                                <button class="text-gray-600 hover:text-gray-700">
+                                    <i class="fas fa-share"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Administration Section -->
+            <div id="admin-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">System Administration</h1>
+                    <p class="text-gray-600 mt-1">User management, system configuration, and maintenance tools</p>
+                </div>
+
+                <!-- System Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6 text-center">
+                        <div class="text-2xl font-bold text-blue-600">24</div>
+                        <div class="text-sm text-gray-600">Active Users</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 text-center">
+                        <div class="text-2xl font-bold text-green-600">99.8%</div>
+                        <div class="text-sm text-gray-600">System Uptime</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 text-center">
+                        <div class="text-2xl font-bold text-purple-600">2.1 GB</div>
+                        <div class="text-sm text-gray-600">Database Size</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 text-center">
+                        <div class="text-2xl font-bold text-yellow-600">15</div>
+                        <div class="text-sm text-gray-600">Pending Tasks</div>
+                    </div>
+                </div>
+
+                <!-- Admin Tools -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- User Management -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">User Management</h3>
+                            <button class="bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700">
+                                <i class="fas fa-plus mr-1"></i>Add User
+                            </button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded">
+                                <div class="flex items-center">
+                                    <img class="w-8 h-8 rounded-full mr-3" src="https://ui-avatars.com/api/?name=Jane+Smith&background=3b82f6&color=fff" alt="Jane">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Jane Smith</p>
+                                        <p class="text-xs text-gray-500">PFO Supervisor</p>
+                                    </div>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded">
+                                <div class="flex items-center">
+                                    <img class="w-8 h-8 rounded-full mr-3" src="https://ui-avatars.com/api/?name=Tom+Wilson&background=green&color=fff" alt="Tom">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Tom Wilson</p>
+                                        <p class="text-xs text-gray-500">PFO Specialist</p>
+                                    </div>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Configuration -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">System Configuration</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Email Notifications</p>
+                                    <p class="text-xs text-gray-500">Send system alerts via email</p>
+                                </div>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="email-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                                    <label for="email-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-green-500 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Auto Backup</p>
+                                    <p class="text-xs text-gray-500">Daily automated backups</p>
+                                </div>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="backup-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                                    <label for="backup-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-green-500 cursor-pointer"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #68D391;
+        }
+    </style>
+
+    <script>
+        // Performance Chart - High quality responsive
+        const ctx = document.getElementById('performanceChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Completed Tasks',
+                        data: [65, 78, 66, 89, 92, 85, 79],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    interaction: {
+                        intersect: false
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: '#e5e7eb',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                stepSize: 20,
+                                color: '#6b7280',
+                                font: { size: 12 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#e5e7eb',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 8
+                        }
+                    }
+                }
+            });
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.querySelector('.sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Edit Profile Modal Functions
+        function openEditProfile(providerId) {
+            // Update modal content based on provider ID
+            document.getElementById('providerId').value = providerId;
+            document.getElementById('editProfileModal').classList.remove('hidden');
+            
+            // Simulate loading provider data
+            console.log('Opening edit profile for:', providerId);
+            
+            // In real implementation, this would make an API call to fetch provider data
+            // and populate the form fields
+        }
+
+        function closeEditProfile() {
+            document.getElementById('editProfileModal').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editProfileModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditProfile();
+            }
+        });
+
+        // Section Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-blue-50', 'text-blue-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-blue-50', 'text-blue-700');
+        }
+
+        // Enhanced search functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.textContent.includes('Search') && e.target.classList.contains('bg-blue-600')) {
+                // Simulate search functionality
+                console.log('Performing search with current filters');
+                
+                // In real implementation, this would:
+                // 1. Collect form values
+                // 2. Make API call with search parameters  
+                // 3. Update table with results
+                // 4. Show loading state during search
+            }
+        });
+
+        // Clear filters functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.textContent.includes('Clear') && e.target.classList.contains('bg-gray-100')) {
+                // Clear all form fields
+                document.querySelectorAll('select, input[type="text"]').forEach(field => {
+                    if (field.type === 'text' && !field.readOnly) {
+                        field.value = '';
+                    } else if (field.tagName === 'SELECT') {
+                        field.selectedIndex = 0;
+                    }
+                });
+                console.log('Filters cleared');
+            }
+        });
+
+        // Initialize with dashboard view
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Letters Management - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .editor-toolbar { border-bottom: 1px solid #e5e7eb; }
+        .template-preview { height: 400px; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .template-preview { height: 300px; }
+        }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .desktop-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-indigo-600 rounded flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="desktop-nav hidden md:ml-6 md:flex md:space-x-4 lg:space-x-8">
+                        <a href="#" class="border-indigo-500 text-indigo-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Letters</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Templates</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Automation</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search letters..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Jennifer+Adams&background=6366f1&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Jennifer Adams</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn fixed top-4 left-4 z-50 p-2 bg-indigo-600 text-white rounded-md md:hidden" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Enhanced Sidebar -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 fixed md:relative z-40 h-full transition-transform duration-300">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Letters Center</h2>
+                <nav class="space-y-1">
+                    <a href="#letters" class="bg-indigo-50 text-indigo-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showLettersSection('letters')">
+                        <i class="fas fa-envelope mr-3"></i>
+                        All Letters
+                    </a>
+                    <a href="#templates" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showLettersSection('templates')">
+                        <i class="fas fa-file-alt mr-3"></i>
+                        Manage Templates
+                    </a>
+                    <a href="#create-template" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showLettersSection('create-template')">
+                        <i class="fas fa-plus mr-3"></i>
+                        Create Template
+                    </a>
+                    <a href="#version-history" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showLettersSection('version-history')">
+                        <i class="fas fa-history mr-3"></i>
+                        Version History
+                    </a>
+                    <a href="#sent-items" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showLettersSection('sent-items')">
+                        <i class="fas fa-paper-plane mr-3"></i>
+                        Sent Items
+                    </a>
+                    <a href="#search-letters" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showLettersSection('search-letters')">
+                        <i class="fas fa-search mr-3"></i>
+                        Advanced Search
+                    </a>
+                </nav>
+
+                <!-- Letter Categories -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Categories</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Welcome Letters</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">12</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Approval Notices</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">8</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Requirement Requests</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">15</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Status Updates</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">6</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 overflow-y-auto md:ml-0">
+            <!-- All Letters Section -->
+            <div id="letters-section" class="section-content p-4 md:p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Letters Management</h1>
+                            <p class="text-gray-600 mt-1">Create, manage, and send professional letters</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50">
+                                <i class="fas fa-download mr-2"></i>Export
+                            </button>
+                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">
+                                <i class="fas fa-plus mr-2"></i>New Letter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Letter Stats -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-indigo-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Templates</p>
+                                <p class="text-2xl font-bold text-gray-900">47</p>
+                            </div>
+                            <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-file-alt text-indigo-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Letters Sent</p>
+                                <p class="text-2xl font-bold text-gray-900">1,247</p>
+                            </div>
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-paper-plane text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Pending Approval</p>
+                                <p class="text-2xl font-bold text-gray-900">23</p>
+                            </div>
+                            <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-yellow-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Automated</p>
+                                <p class="text-2xl font-bold text-gray-900">89%</p>
+                            </div>
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-robot text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Letter Editor and Templates -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Letter Editor -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Letter Editor</h3>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded hover:bg-gray-200">
+                                        <i class="fas fa-save mr-1"></i>Save Draft
+                                    </button>
+                                    <button class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200">
+                                        <i class="fas fa-eye mr-1"></i>Preview
+                                    </button>
+                                    <button class="px-3 py-1 bg-green-100 text-green-700 text-sm rounded hover:bg-green-200">
+                                        <i class="fas fa-paper-plane mr-1"></i>Send
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Editor Toolbar -->
+                        <div class="px-6 py-3 editor-toolbar bg-gray-50">
+                            <div class="flex space-x-2">
+                                <button class="p-2 hover:bg-gray-200 rounded"><i class="fas fa-bold"></i></button>
+                                <button class="p-2 hover:bg-gray-200 rounded"><i class="fas fa-italic"></i></button>
+                                <button class="p-2 hover:bg-gray-200 rounded"><i class="fas fa-underline"></i></button>
+                                <div class="border-l border-gray-300 mx-2"></div>
+                                <button class="p-2 hover:bg-gray-200 rounded"><i class="fas fa-align-left"></i></button>
+                                <button class="p-2 hover:bg-gray-200 rounded"><i class="fas fa-align-center"></i></button>
+                                <button class="p-2 hover:bg-gray-200 rounded"><i class="fas fa-align-right"></i></button>
+                                <div class="border-l border-gray-300 mx-2"></div>
+                                <button class="p-2 hover:bg-gray-200 rounded"><i class="fas fa-list-ul"></i></button>
+                                <button class="p-2 hover:bg-gray-200 rounded"><i class="fas fa-list-ol"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Form Fields -->
+                        <div class="p-6 space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Template</label>
+                                    <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                        <option>Welcome Letter - New Provider</option>
+                                        <option>Document Request</option>
+                                        <option>Status Update</option>
+                                        <option>Approval Notice</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Recipient</label>
+                                    <input type="text" placeholder="Provider name or ID" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                                <input type="text" placeholder="Letter subject" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" value="Welcome to TruProvider Network">
+                            </div>
+
+                            <!-- Letter Content -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                                <div class="border border-gray-300 rounded-md template-preview bg-white p-4">
+                                    <div class="space-y-4">
+                                        <div class="text-right text-sm text-gray-600">
+                                            March 16, 2026
+                                        </div>
+                                        
+                                        <div>
+                                            <p class="text-sm text-gray-900">Dr. Sarah Johnson<br>
+                                            Memorial Medical Center<br>
+                                            123 Healthcare Drive<br>
+                                            Springfield, IL 62701</p>
+                                        </div>
+
+                                        <div>
+                                            <p class="text-sm text-gray-900 font-medium">Dear Dr. Johnson,</p>
+                                        </div>
+
+                                        <div class="text-sm text-gray-900 space-y-3">
+                                            <p>Welcome to the TruProvider network! We are pleased to inform you that your credentialing application has been approved and you are now an active provider in our network.</p>
+                                            
+                                            <p>Your provider information:</p>
+                                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                                <li>Provider ID: PRV-2024-3847</li>
+                                                <li>Network Tier: Tier 1</li>
+                                                <li>Effective Date: March 1, 2026</li>
+                                                <li>Specialty: Cardiology</li>
+                                            </ul>
+
+                                            <p>Next steps:</p>
+                                            <ol class="list-decimal list-inside ml-4 space-y-1">
+                                                <li>Log into your provider portal at portal.truprovider.com</li>
+                                                <li>Complete your profile setup</li>
+                                                <li>Submit any outstanding documentation</li>
+                                            </ol>
+
+                                            <p>If you have any questions, please contact our Provider Services team at (555) 123-4567.</p>
+                                            
+                                            <p>Thank you for joining our network.</p>
+                                        </div>
+
+                                        <div class="text-sm text-gray-900">
+                                            <p>Sincerely,</p>
+                                            <p class="mt-3">Provider Network Services<br>
+                                            TruProvider</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Templates Library -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Template Library</h3>
+                        </div>
+                        <div class="p-6">
+                            <!-- Template Categories -->
+                            <div class="space-y-4">
+                                <div class="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 cursor-pointer">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="text-sm font-medium text-gray-900">Welcome Package</h4>
+                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Popular</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-2">Complete welcome letter with network details</p>
+                                    <div class="flex justify-between text-xs text-gray-500">
+                                        <span>Used 47 times</span>
+                                        <span>Updated 2 days ago</span>
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 cursor-pointer">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="text-sm font-medium text-gray-900">Document Request</h4>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-2">Request missing credentialing documents</p>
+                                    <div class="flex justify-between text-xs text-gray-500">
+                                        <span>Used 23 times</span>
+                                        <span>Updated 1 week ago</span>
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 cursor-pointer">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="text-sm font-medium text-gray-900">Status Update</h4>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-2">General status update template</p>
+                                    <div class="flex justify-between text-xs text-gray-500">
+                                        <span>Used 15 times</span>
+                                        <span>Updated 3 days ago</span>
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 cursor-pointer">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="text-sm font-medium text-gray-900">Approval Notice</h4>
+                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">New</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-2">Credentialing approval confirmation</p>
+                                    <div class="flex justify-between text-xs text-gray-500">
+                                        <span>Used 8 times</span>
+                                        <span>Created yesterday</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="mt-6 pt-6 border-t border-gray-200">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">Quick Actions</h4>
+                                <div class="space-y-2">
+                                    <button class="w-full text-left px-3 py-2 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
+                                        <i class="fas fa-plus mr-2"></i>Create New Template
+                                    </button>
+                                    <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                                        <i class="fas fa-upload mr-2"></i>Import Template
+                                    </button>
+                                    <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                                        <i class="fas fa-cog mr-2"></i>Manage Variables
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Templates Section -->
+            <div id="templates-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Template Management</h1>
+                            <p class="text-gray-600 mt-1">View, edit, and manage all letter templates</p>
+                        </div>
+                        <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                            <i class="fas fa-plus mr-2"></i>New Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Welcome Letter - New Provider</h3>
+                            <div class="flex space-x-1">
+                                <button class="text-blue-600 hover:text-blue-700 p-1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-700 p-1">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-700 p-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Comprehensive welcome package for new network providers</p>
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <span>Used: 47 times</span>
+                            <span>v3.2</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Document Request</h3>
+                            <div class="flex space-x-1">
+                                <button class="text-blue-600 hover:text-blue-700 p-1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-700 p-1">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-700 p-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Request missing credentialing documents from providers</p>
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <span>Used: 89 times</span>
+                            <span>v2.1</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Approval Notice</h3>
+                            <div class="flex space-x-1">
+                                <button class="text-blue-600 hover:text-blue-700 p-1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-700 p-1">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-700 p-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Notify providers of credentialing approval status</p>
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <span>Used: 156 times</span>
+                            <span>v1.8</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Template Section -->
+            <div id="create-template-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Create New Letter Template</h1>
+                    <p class="text-gray-600 mt-1">Design custom letter templates for various communication purposes</p>
+                </div>
+
+                <!-- Template Creation Form -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <form class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Template Name</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" placeholder="e.g., Provider Status Update">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                    <option>Select Category</option>
+                                    <option>Welcome Letters</option>
+                                    <option>Document Requests</option>
+                                    <option>Status Updates</option>
+                                    <option>Approval Notices</option>
+                                    <option>Compliance Notifications</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Template Description</label>
+                            <textarea class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" rows="3" placeholder="Brief description of template purpose and usage"></textarea>
+                        </div>
+
+                        <!-- Template Content Editor -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Template Content</label>
+                            <div class="border border-gray-300 rounded-md">
+                                <!-- Editor Toolbar -->
+                                <div class="px-4 py-2 bg-gray-50 border-b border-gray-300 flex items-center space-x-2">
+                                    <button type="button" class="p-1 hover:bg-gray-200 rounded"><i class="fas fa-bold"></i></button>
+                                    <button type="button" class="p-1 hover:bg-gray-200 rounded"><i class="fas fa-italic"></i></button>
+                                    <button type="button" class="p-1 hover:bg-gray-200 rounded"><i class="fas fa-underline"></i></button>
+                                    <div class="border-l border-gray-300 mx-2 h-4"></div>
+                                    <button type="button" class="p-1 hover:bg-gray-200 rounded"><i class="fas fa-list-ul"></i></button>
+                                    <button type="button" class="p-1 hover:bg-gray-200 rounded"><i class="fas fa-list-ol"></i></button>
+                                    <div class="border-l border-gray-300 mx-2 h-4"></div>
+                                    <select class="text-sm border border-gray-300 rounded px-2 py-1">
+                                        <option>Insert Variable</option>
+                                        <option>{{provider_name}}</option>
+                                        <option>{{provider_id}}</option>
+                                        <option>{{specialty}}</option>
+                                        <option>{{effective_date}}</option>
+                                    </select>
+                                </div>
+                                <textarea class="w-full px-4 py-3 text-sm resize-none focus:outline-none" rows="12" placeholder="Enter your letter content here...
+
+You can use variables like {{provider_name}}, {{specialty}}, etc."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200">
+                                Save as Draft
+                            </button>
+                            <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                                <i class="fas fa-eye mr-2"></i>Preview
+                            </button>
+                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                                Create Template
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Version History Section -->
+            <div id="version-history-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Template Version History</h1>
+                    <p class="text-gray-600 mt-1">Track all changes made to letter templates over time</p>
+                </div>
+
+                <!-- Template Selection -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Select Template</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>Welcome Letter - New Provider</option>
+                                <option>Document Request</option>
+                                <option>Status Update</option>
+                                <option>Approval Notice</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Time</option>
+                                <option>Last 30 Days</option>
+                                <option>Last 3 Months</option>
+                                <option>This Year</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                                <i class="fas fa-search mr-2"></i>View History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Version History Timeline -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Change History - Welcome Letter Template</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 flex items-start space-x-4">
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i class="fas fa-save text-green-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">Version 3.2 - Current</p>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-eye mr-1"></i>View
+                                        </button>
+                                        <button class="text-indigo-600 hover:text-indigo-700 text-sm">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500">Updated provider portal URL and contact information</p>
+                                <div class="flex items-center text-xs text-gray-400 mt-2">
+                                    <img class="h-4 w-4 rounded-full mr-2" src="https://ui-avatars.com/api/?name=Jennifer+Adams&background=6366f1&color=fff" alt="">
+                                    <span>Jennifer Adams • 2 hours ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 flex items-start space-x-4">
+                            <div class="bg-blue-100 p-2 rounded-full">
+                                <i class="fas fa-edit text-blue-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">Version 3.1</p>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-eye mr-1"></i>View
+                                        </button>
+                                        <button class="text-yellow-600 hover:text-yellow-700 text-sm">
+                                            <i class="fas fa-undo mr-1"></i>Restore
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500">Added network tier information and effective date details</p>
+                                <div class="flex items-center text-xs text-gray-400 mt-2">
+                                    <img class="h-4 w-4 rounded-full mr-2" src="https://ui-avatars.com/api/?name=Tom+Wilson&background=10b981&color=fff" alt="">
+                                    <span>Tom Wilson • 1 week ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 flex items-start space-x-4">
+                            <div class="bg-yellow-100 p-2 rounded-full">
+                                <i class="fas fa-plus text-yellow-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">Version 3.0 - Initial</p>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-eye mr-1"></i>View
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500">Template created with basic welcome message structure</p>
+                                <div class="flex items-center text-xs text-gray-400 mt-2">
+                                    <img class="h-4 w-4 rounded-full mr-2" src="https://ui-avatars.com/api/?name=Sarah+Kim&background=f59e0b&color=fff" alt="">
+                                    <span>Sarah Kim • 3 weeks ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Search Section -->
+            <div id="search-letters-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Advanced Letter Search</h1>
+                    <p class="text-gray-600 mt-1">Search for specific letters using keywords and filters</p>
+                </div>
+
+                <!-- Search Interface -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="space-y-4">
+                        <!-- Keyword Search -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Search by Keywords</label>
+                            <div class="relative">
+                                <input type="text" placeholder="Enter keywords: provider, approval, welcome, document..." class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <button class="absolute right-3 top-3 text-gray-400 hover:text-indigo-600">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Filters -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                    <option>All Categories</option>
+                                    <option>Welcome Letters</option>
+                                    <option>Document Requests</option>
+                                    <option>Status Updates</option>
+                                    <option>Approval Notices</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                    <option>All Purposes</option>
+                                    <option>Onboarding</option>
+                                    <option>Compliance</option>
+                                    <option>Information Request</option>
+                                    <option>Status Notification</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Date Created</label>
+                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                    <option>All Time</option>
+                                    <option>Last Week</option>
+                                    <option>Last Month</option>
+                                    <option>Last 3 Months</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                    <option>All Statuses</option>
+                                    <option>Active</option>
+                                    <option>Draft</option>
+                                    <option>Archived</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Results -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
+                            <div class="text-sm text-gray-600">
+                                <strong>23 templates found</strong> matching your criteria
+                            </div>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">Welcome Letter - New Provider v3.2</h4>
+                                    <p class="text-sm text-gray-500">Comprehensive welcome package with network details and next steps</p>
+                                    <div class="flex items-center mt-2 space-x-4 text-xs text-gray-400">
+                                        <span><i class="fas fa-tag mr-1"></i>Welcome Letters</span>
+                                        <span><i class="fas fa-clock mr-1"></i>Updated 2 hours ago</span>
+                                        <span><i class="fas fa-user mr-1"></i>Jennifer Adams</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-700">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-indigo-600 hover:text-indigo-700">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-700">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">Document Request - Missing Credentials</h4>
+                                    <p class="text-sm text-gray-500">Request missing credentialing documents from providers</p>
+                                    <div class="flex items-center mt-2 space-x-4 text-xs text-gray-400">
+                                        <span><i class="fas fa-tag mr-1"></i>Document Requests</span>
+                                        <span><i class="fas fa-clock mr-1"></i>Updated 1 week ago</span>
+                                        <span><i class="fas fa-user mr-1"></i>Tom Wilson</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-700">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-indigo-600 hover:text-indigo-700">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-700">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sent Items Section -->
+            <div id="sent-items-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Sent Letters</h1>
+                    <p class="text-gray-600 mt-1">Track all letters sent to providers with verification status</p>
+                </div>
+
+                <!-- Sent Letters Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+                        <div class="text-xl font-bold text-green-600">1,247</div>
+                        <div class="text-sm text-gray-600">Total Letters Sent</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+                        <div class="text-xl font-bold text-blue-600">89%</div>
+                        <div class="text-sm text-gray-600">Delivery Success Rate</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+                        <div class="text-xl font-bold text-yellow-600">156</div>
+                        <div class="text-sm text-gray-600">This Month</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+                        <div class="text-xl font-bold text-purple-600">23</div>
+                        <div class="text-sm text-gray-600">Pending Verification</div>
+                    </div>
+                </div>
+
+                <!-- Sent Letters Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Recent Sent Letters</h3>
+                            <button class="bg-indigo-600 text-white px-3 py-2 rounded text-sm hover:bg-indigo-700">
+                                <i class="fas fa-download mr-1"></i>Export Report
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recipient</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Template</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purpose</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sent Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Dr+Sarah+Johnson&background=6366f1&color=fff" alt="">
+                                            <div class="ml-3">
+                                                <div class="text-sm font-medium text-gray-900">Dr. Sarah Johnson</div>
+                                                <div class="text-sm text-gray-500">sarah.johnson@email.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Welcome Letter</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Onboarding
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/16/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Delivered
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-indigo-600 hover:text-indigo-900">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for Letters
+        function showLettersSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-indigo-50', 'text-indigo-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-indigo-50', 'text-indigo-700');
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Initialize with letters view
+        document.addEventListener('DOMContentLoaded', function() {
+            showLettersSection('letters');
+        });
+    </script>
+</body>
+</html>

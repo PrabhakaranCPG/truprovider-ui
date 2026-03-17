@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Provider Management - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .provider-card { transition: all 0.2s ease; }
+        .provider-card:hover { transform: translateY(-2px); }
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-blue-600 rounded flex items-center justify-center hover:bg-blue-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-blue-700 text-blue-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Provider Management</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Credentialing</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Analytics</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search providers..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Provider+Manager&background=1d4ed8&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Provider Manager</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Enhanced Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Provider Management</h2>
+                <nav class="space-y-1">
+                    <a href="#dashboard" class="bg-blue-50 text-blue-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showProviderSection('dashboard')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#provider-search" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showProviderSection('provider-search')">
+                        <i class="fas fa-search mr-3"></i>
+                        Provider Search
+                    </a>
+                    <a href="#mass-updates" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showProviderSection('mass-updates')">
+                        <i class="fas fa-edit mr-3"></i>
+                        Mass Updates
+                    </a>
+                    <a href="#demographic-updates" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showProviderSection('demographic-updates')">
+                        <i class="fas fa-user-edit mr-3"></i>
+                        Demographic Updates
+                    </a>
+                    <a href="#network-updates" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showProviderSection('network-updates')">
+                        <i class="fas fa-network-wired mr-3"></i>
+                        Network Updates
+                    </a>
+                    <a href="#tax-location" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showProviderSection('tax-location')">
+                        <i class="fas fa-map-marker-alt mr-3"></i>
+                        Tax & Location
+                    </a>
+                </nav>
+
+                <!-- Provider Categories -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Provider Types</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Individual Practitioners</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">1,847</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Group Practices</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">342</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Hospitals</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">89</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Facilities</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">156</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md">
+                            <i class="fas fa-plus mr-2"></i>Add Provider
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                            <i class="fas fa-upload mr-2"></i>Bulk Import
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                            <i class="fas fa-download mr-2"></i>Export Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Provider Management Console</h1>
+                            <p class="text-gray-600 mt-1">Advanced search and mass update capabilities for comprehensive provider management</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50">
+                                <i class="fas fa-filter mr-2"></i>Advanced Filters
+                            </button>
+                            <button class="bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-800">
+                                <i class="fas fa-user-plus mr-2"></i>Add Provider
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provider Overview Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6 provider-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Providers</p>
+                                <p class="text-3xl font-bold text-gray-900">2,434</p>
+                                <p class="text-xs text-blue-600 flex items-center mt-2">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    23 new this month
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-users text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 provider-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active Providers</p>
+                                <p class="text-3xl font-bold text-gray-900">2,287</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    93.9% active rate
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-check text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 provider-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Pending Approval</p>
+                                <p class="text-3xl font-bold text-gray-900">89</p>
+                                <p class="text-xs text-yellow-600 flex items-center mt-2">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Avg 5.2 days
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-hourglass-half text-yellow-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 provider-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Issues Requiring Attention</p>
+                                <p class="text-3xl font-bold text-gray-900">12</p>
+                                <p class="text-xs text-red-600 flex items-center mt-2">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    5 urgent
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provider Analytics and Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Provider Analytics Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Provider Growth & Performance</h3>
+                            <select class="text-sm border border-gray-300 rounded-md px-2 py-1">
+                                <option>Last 6 months</option>
+                                <option>Last 12 months</option>
+                                <option>Last 2 years</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="providerChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Provider Activity -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Recent Provider Activity</h3>
+                        </div>
+                        <div class="divide-y divide-gray-200 max-h-80 overflow-y-auto">
+                            <div class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Dr+Sarah+Johnson&background=10b981&color=fff" alt="">
+                                    <div class="ml-3 flex-1">
+                                        <p class="text-sm text-gray-900">
+                                            <span class="font-medium">Dr. Sarah Johnson</span> completed credentialing process
+                                        </p>
+                                        <p class="text-sm text-gray-500">Cardiology | Memorial Hospital</p>
+                                        <p class="text-xs text-gray-400 mt-1">15 minutes ago</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Approved</span>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Springfield+Clinic&background=3b82f6&color=fff" alt="">
+                                    <div class="ml-3 flex-1">
+                                        <p class="text-sm text-gray-900">
+                                            <span class="font-medium">Springfield Clinic</span> updated contact information
+                                        </p>
+                                        <p class="text-sm text-gray-500">Group Practice | 45 Providers</p>
+                                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Updated</span>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Dr+Michael+Chen&background=f59e0b&color=fff" alt="">
+                                    <div class="ml-3 flex-1">
+                                        <p class="text-sm text-gray-900">
+                                            <span class="font-medium">Dr. Michael Chen</span> flagged for license renewal
+                                        </p>
+                                        <p class="text-sm text-gray-500">Orthopedic Surgery | West Medical Center</p>
+                                        <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
+                                    </div>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Alert</span>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Metro+Hospital&background=8b5cf6&color=fff" alt="">
+                                    <div class="ml-3 flex-1">
+                                        <p class="text-sm text-gray-900">
+                                            <span class="font-medium">Metro Hospital</span> added new department
+                                        </p>
+                                        <p class="text-sm text-gray-500">Hospital | Pediatric Oncology</p>
+                                        <p class="text-xs text-gray-400 mt-1">4 hours ago</p>
+                                    </div>
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">New</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provider Directory Table -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Provider Directory</h3>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex bg-gray-100 rounded-md">
+                                    <button class="px-3 py-1 bg-white text-gray-700 text-sm rounded-l-md shadow-sm">
+                                        <i class="fas fa-th-list mr-1"></i>List
+                                    </button>
+                                    <button class="px-3 py-1 text-gray-500 text-sm rounded-r-md hover:bg-gray-50">
+                                        <i class="fas fa-th-large mr-1"></i>Cards
+                                    </button>
+                                </div>
+                                <select class="text-sm border border-gray-300 rounded-md px-2 py-1">
+                                    <option>All Providers</option>
+                                    <option>Active Only</option>
+                                    <option>Pending Only</option>
+                                    <option>Recently Added</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Specialty</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quality Score</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Dr+Sarah+Johnson&background=10b981&color=fff" alt="">
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Dr. Sarah Johnson</div>
+                                                <div class="text-sm text-gray-500">NPI: 1234567890</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Individual
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Cardiology</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">New York, NY</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-medium text-gray-900">4.8</span>
+                                            <div class="ml-2 flex text-yellow-400">
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Memorial+Hospital&background=f59e0b&color=fff" alt="">
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Memorial Hospital</div>
+                                                <div class="text-sm text-gray-500">NPI: 9876543210</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                            Hospital
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Multi-Specialty</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Los Angeles, CA</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Under Review
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-medium text-gray-900">4.5</span>
+                                            <div class="ml-2 flex text-yellow-400">
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="far fa-star text-xs"></i>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                            <button class="text-yellow-600 hover:text-yellow-900">
+                                                <i class="fas fa-clock"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Springfield+Clinic&background=3b82f6&color=fff" alt="">
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Springfield Clinic</div>
+                                                <div class="text-sm text-gray-500">Group ID: GRP-001234</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Group Practice
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Family Medicine</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Springfield, IL</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-medium text-gray-900">4.6</span>
+                                            <div class="ml-2 flex text-yellow-400">
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star-half-alt text-xs"></i>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                            <button class="text-purple-600 hover:text-purple-900">
+                                                <i class="fas fa-users"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="bg-white px-6 py-3 border-t border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing <span class="font-medium">1</span> to <span class="font-medium">25</span> of <span class="font-medium">2,434</span> providers
+                                </p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">Previous</button>
+                                <button class="px-3 py-1 bg-blue-700 text-white text-sm rounded">1</button>
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">3</button>
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provider Search Section -->
+            <div id="provider-search-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Advanced Provider Search</h1>
+                            <p class="text-gray-600 mt-1">Comprehensive search with multiple filter options for efficient provider discovery</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Search Filters -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-6">Search Filters</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Provider Name/NPI</label>
+                            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by name or NPI">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option>All Specialties</option>
+                                <option>Cardiology</option>
+                                <option>Internal Medicine</option>
+                                <option>Family Medicine</option>
+                                <option>Orthopedic Surgery</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Provider Type</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option>All Types</option>
+                                <option>Individual</option>
+                                <option>Group Practice</option>
+                                <option>Hospital</option>
+                                <option>Facility</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Network Status</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option>All Networks</option>
+                                <option>In-Network</option>
+                                <option>Out-of-Network</option>
+                                <option>Pending Network</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="City, State or ZIP">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Credentialing Status</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option>All Statuses</option>
+                                <option>Credentialed</option>
+                                <option>Pending</option>
+                                <option>Expired</option>
+                                <option>Suspended</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Quality Score</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option>Any Score</option>
+                                <option>4.5 - 5.0 (Excellent)</option>
+                                <option>4.0 - 4.4 (Very Good)</option>
+                                <option>3.5 - 3.9 (Good)</option>
+                                <option>Below 3.5</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800">
+                                <i class="fas fa-search mr-2"></i>Search Providers
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Results -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-500">147 providers found</span>
+                                <button class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded hover:bg-blue-200">
+                                    <i class="fas fa-download mr-1"></i>Export Results
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-center py-8">
+                            <i class="fas fa-search text-gray-400 text-4xl mb-4"></i>
+                            <p class="text-gray-500">Use the search filters above to find specific providers efficiently</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mass Updates Section -->
+            <div id="mass-updates-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Mass Updates</h1>
+                            <p class="text-gray-600 mt-1">Perform bulk updates using mass update templates</p>
+                        </div>
+                        <button class="bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800">
+                            <i class="fas fa-plus mr-2"></i>New Mass Update
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mass Update Categories -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user-edit text-blue-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">12 Templates</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Demographic Updates</h3>
+                        <p class="text-sm text-gray-600 mb-4">Update profile information: email, fax, language using mass update template</p>
+                        <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">
+                            <i class="fas fa-upload mr-2"></i>Start Demographic Update
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-network-wired text-green-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">8 Templates</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">In-Network Updates</h3>
+                        <p class="text-sm text-gray-600 mb-4">Update networks/brands participation and in-network details using template</p>
+                        <button class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm">
+                            <i class="fas fa-upload mr-2"></i>Start Network Update
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-ban text-red-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">6 Templates</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Out-Network Updates</h3>
+                        <p class="text-sm text-gray-600 mb-4">Update networks/brands participation and out-of-network details using template</p>
+                        <button class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 text-sm">
+                            <i class="fas fa-upload mr-2"></i>Start Out-Network Update
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt text-yellow-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">4 Templates</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Location Termination</h3>
+                        <p class="text-sm text-gray-600 mb-4">Perform termination updates to inactivate locations using template</p>
+                        <button class="w-full bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 text-sm">
+                            <i class="fas fa-times-circle mr-2"></i>Start Location Termination
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-receipt text-purple-600 text-xl"></i>
+                            </div>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">5 Templates</span>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Tax Updates</h3>
+                        <p class="text-sm text-gray-600 mb-4">Update tax affiliation, center affiliation, and tax ID using template</p>
+                        <button class="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 text-sm">
+                            <i class="fas fa-receipt mr-2"></i>Start Tax Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demographic Updates Section -->
+            <div id="demographic-updates-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Demographic Updates</h1>
+                            <p class="text-gray-600 mt-1">Mass updates for provider profile information using templates</p>
+                        </div>
+                        <button class="bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800">
+                            <i class="fas fa-upload mr-2"></i>Upload Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Options -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-envelope text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">Email Updates</h4>
+                                <p class="text-sm text-gray-500">Update primary and secondary emails</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Template:</span>
+                                <span class="text-blue-600">email_update_v2.xlsx</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Last Used:</span>
+                                <span class="text-gray-500">2 days ago</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">
+                            Start Email Update
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-fax text-green-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">Fax Updates</h4>
+                                <p class="text-sm text-gray-500">Update fax numbers and preferences</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Template:</span>
+                                <span class="text-green-600">fax_update_v1.xlsx</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Last Used:</span>
+                                <span class="text-gray-500">1 week ago</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm">
+                            Start Fax Update
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-language text-purple-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">Language Updates</h4>
+                                <p class="text-sm text-gray-500">Update provider language preferences</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Template:</span>
+                                <span class="text-purple-600">language_update_v1.xlsx</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Last Used:</span>
+                                <span class="text-gray-500">3 days ago</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 text-sm">
+                            Start Language Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Updates Section -->
+            <div id="network-updates-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Network Updates</h1>
+                            <p class="text-gray-600 mt-1">Manage provider network participation and status changes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Update Types -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- In-Network Updates -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">In-Network Updates</h3>
+                                <p class="text-sm text-gray-500">Update network/brand participation and in-network details</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border border-green-200 rounded-lg p-4 bg-green-50">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">Available Templates</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Network Participation</span>
+                                        <button class="text-green-600 hover:text-green-700 text-xs">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Brand Assignment</span>
+                                        <button class="text-green-600 hover:text-green-700 text-xs">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Coverage Areas</span>
+                                        <button class="text-green-600 hover:text-green-700 text-xs">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                                <i class="fas fa-upload mr-2"></i>Upload In-Network Template
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Out-Network Updates -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">Out-Network Updates</h3>
+                                <p class="text-sm text-gray-500">Update network/brand participation and out-of-network details</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border border-red-200 rounded-lg p-4 bg-red-50">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">Available Templates</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Network Termination</span>
+                                        <button class="text-red-600 hover:text-red-700 text-xs">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Brand Removal</span>
+                                        <button class="text-red-600 hover:text-red-700 text-xs">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Coverage Restriction</span>
+                                        <button class="text-red-600 hover:text-red-700 text-xs">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                                <i class="fas fa-upload mr-2"></i>Upload Out-Network Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax & Location Section -->
+            <div id="tax-location-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Tax & Location Management</h1>
+                            <p class="text-gray-600 mt-1">Update tax affiliations, center affiliations, and location terminations</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tax & Location Updates -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Tax Updates -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-receipt text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">Tax Affiliation Updates</h3>
+                                <p class="text-sm text-gray-500">Update tax and center affiliation information</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border border-purple-200 rounded-lg p-4 bg-purple-50">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">Tax Update Templates</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-2 bg-white rounded border">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-900">Tax ID Association</span>
+                                            <p class="text-xs text-gray-500">Link providers to tax entities</p>
+                                        </div>
+                                        <button class="text-purple-600 hover:text-purple-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-white rounded border">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-900">Center Affiliation</span>
+                                            <p class="text-xs text-gray-500">Update center assignments</p>
+                                        </div>
+                                        <button class="text-purple-600 hover:text-purple-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-white rounded border">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-900">Billing Information</span>
+                                            <p class="text-xs text-gray-500">Update billing and payment details</p>
+                                        </div>
+                                        <button class="text-purple-600 hover:text-purple-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
+                                <i class="fas fa-upload mr-2"></i>Upload Tax Update File
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Location Termination -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-map-marker-alt text-yellow-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">Location Termination</h3>
+                                <p class="text-sm text-gray-500">Inactivate provider locations using templates</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">Termination Options</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-2 bg-white rounded border">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-900">Single Location</span>
+                                            <p class="text-xs text-gray-500">Terminate individual locations</p>
+                                        </div>
+                                        <button class="text-yellow-600 hover:text-yellow-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-white rounded border">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-900">Bulk Location</span>
+                                            <p class="text-xs text-gray-500">Terminate multiple locations</p>
+                                        </div>
+                                        <button class="text-yellow-600 hover:text-yellow-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-white rounded border">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-900">Provider Relocation</span>
+                                            <p class="text-xs text-gray-500">Move to new location</p>
+                                        </div>
+                                        <button class="text-yellow-600 hover:text-yellow-700 text-sm">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="w-full bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700">
+                                <i class="fas fa-times-circle mr-2"></i>Upload Termination File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for Provider Management
+        function showProviderSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-blue-50', 'text-blue-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-blue-50', 'text-blue-700');
+        }
+
+        // Initialize with dashboard view
+        document.addEventListener('DOMContentLoaded', function() {
+            showProviderSection('dashboard');
+        });
+        // Provider Growth Chart - Fixed sizing
+        const providerCtx = document.getElementById('providerChart');
+        if (providerCtx) {
+            providerCtx.width = 400;
+            providerCtx.height = 200;
+            
+            new Chart(providerCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'New Providers',
+                        data: [23, 19, 28, 34, 42, 28],
+                        borderColor: '#1d4ed8',
+                        backgroundColor: 'rgba(29, 78, 216, 0.1)',
+                        tension: 0.4,
+                        pointRadius: 4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1
+                }
+            });
+        }
+    </script>
+</body>
+</html>

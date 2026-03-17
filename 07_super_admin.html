@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Super Admin - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .admin-badge { 
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            animation: pulse 2s infinite;
+        }
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .chart-container { height: 200px; }
+        }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .desktop-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-orange-600 rounded flex items-center justify-center hover:bg-orange-700 transition-colors cursor-pointer admin-badge">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <div class="ml-4 flex items-center">
+                        <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-medium">
+                            <i class="fas fa-crown mr-1"></i>SUPER ADMIN
+                        </span>
+                    </div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-orange-500 text-orange-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Control Center</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">System Health</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Global Settings</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-ping"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full border-2 border-orange-400" src="https://ui-avatars.com/api/?name=Super+Admin&background=f59e0b&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Super Admin</span>
+                        <i class="fas fa-shield-alt text-orange-500"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn fixed top-4 left-4 z-50 p-2 bg-orange-600 text-white rounded-md md:hidden" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Enhanced Sidebar -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 fixed md:relative z-40 h-full transition-transform duration-300">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Super Admin</h2>
+                <nav class="space-y-1">
+                    <a href="#control-center" class="bg-orange-50 text-orange-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSuperAdminSection('control-center')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Control Center
+                    </a>
+                    <a href="#tenant-management" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSuperAdminSection('tenant-management')">
+                        <i class="fas fa-building mr-3"></i>
+                        Tenant Management
+                    </a>
+                    <a href="#global-overview" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSuperAdminSection('global-overview')">
+                        <i class="fas fa-globe mr-3"></i>
+                        Global Overview
+                    </a>
+                    <a href="#infrastructure" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSuperAdminSection('infrastructure')">
+                        <i class="fas fa-server mr-3"></i>
+                        Infrastructure
+                    </a>
+                    <a href="#database-control" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSuperAdminSection('database-control')">
+                        <i class="fas fa-database mr-3"></i>
+                        Database Control
+                    </a>
+                    <a href="#security-center" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSuperAdminSection('security-center')">
+                        <i class="fas fa-shield-alt mr-3"></i>
+                        Security Center
+                    </a>
+                    <a href="#monitoring" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSuperAdminSection('monitoring')">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        System Monitoring
+                    </a>
+                </nav>
+
+                <!-- Emergency Actions -->
+                <div class="mt-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <h3 class="text-sm font-medium text-red-900 mb-2">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        Emergency Actions
+                    </h3>
+                    <div class="space-y-2">
+                        <button class="w-full text-left px-2 py-1 text-xs text-red-700 hover:bg-red-100 rounded">
+                            <i class="fas fa-power-off mr-2"></i>System Shutdown
+                        </button>
+                        <button class="w-full text-left px-2 py-1 text-xs text-red-700 hover:bg-red-100 rounded">
+                            <i class="fas fa-ban mr-2"></i>Emergency Lockdown
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 overflow-y-auto md:ml-0">
+            <!-- Control Center Section -->
+            <div id="control-center-section" class="section-content p-4 md:p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+                                <i class="fas fa-crown text-orange-500 mr-2"></i>
+                                Super Admin Control Center
+                            </h1>
+                            <p class="text-gray-600 mt-1">Enterprise-level system administration with multi-tenant oversight</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-sm text-gray-600">All Systems Operational</span>
+                            </div>
+                            <button class="bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-700">
+                                <i class="fas fa-cog mr-2"></i>System Control
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Critical System Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow p-6 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100 text-sm font-medium">System Health</p>
+                                <p class="text-3xl font-bold">98.7%</p>
+                                <p class="text-green-100 text-xs">Excellent</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-400 bg-opacity-30 rounded-full flex items-center justify-center">
+                                <i class="fas fa-heartbeat text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow p-6 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-100 text-sm font-medium">Active Tenants</p>
+                                <p class="text-3xl font-bold">47</p>
+                                <p class="text-blue-100 text-xs">Multi-tenant system</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-400 bg-opacity-30 rounded-full flex items-center justify-center">
+                                <i class="fas fa-building text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg shadow p-6 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-100 text-sm font-medium">Data Processing</p>
+                                <p class="text-3xl font-bold">2.4TB</p>
+                                <p class="text-purple-100 text-xs">Last 24 hours</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-400 bg-opacity-30 rounded-full flex items-center justify-center">
+                                <i class="fas fa-database text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-lg shadow p-6 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-red-100 text-sm font-medium">Security Events</p>
+                                <p class="text-3xl font-bold">12</p>
+                                <p class="text-red-100 text-xs">Requires attention</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-400 bg-opacity-30 rounded-full flex items-center justify-center">
+                                <i class="fas fa-shield-alt text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Infrastructure Overview -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <!-- System Performance -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">System Performance</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded">Live</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Global Tenant Health -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Global Tenant Health</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                        <span class="text-sm text-gray-900">Healthy Tenants</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">42 (89%)</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                                        <span class="text-sm text-gray-900">Warning Status</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">3 (6%)</span>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                                        <span class="text-sm text-gray-900">Critical Issues</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-900">2 (4%)</span>
+                                </div>
+                            </div>
+
+                            <!-- Tenant List -->
+                            <div class="mt-6 space-y-2">
+                                <h4 class="text-sm font-medium text-gray-900">Critical Tenants</h4>
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">HealthSystem West</p>
+                                            <p class="text-xs text-red-600">Database connection issues</p>
+                                        </div>
+                                        <button class="text-red-600 hover:text-red-700 text-sm">
+                                            <i class="fas fa-tools"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Metro Medical Group</p>
+                                            <p class="text-xs text-red-600">API rate limit exceeded</p>
+                                        </div>
+                                        <button class="text-red-600 hover:text-red-700 text-sm">
+                                            <i class="fas fa-tools"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Controls -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- System Controls -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">System Controls</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <button class="w-full flex items-center justify-between p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-sync mr-3"></i>
+                                        <span class="text-sm font-medium">Global Sync</span>
+                                    </div>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+
+                                <button class="w-full flex items-center justify-between p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-database mr-3"></i>
+                                        <span class="text-sm font-medium">Backup All Systems</span>
+                                    </div>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+
+                                <button class="w-full flex items-center justify-between p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-chart-line mr-3"></i>
+                                        <span class="text-sm font-medium">Performance Analysis</span>
+                                    </div>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+
+                                <button class="w-full flex items-center justify-between p-3 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-users-cog mr-3"></i>
+                                        <span class="text-sm font-medium">Tenant Management</span>
+                                    </div>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Dashboard -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Security Dashboard</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Firewall Status</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">DDoS Protection</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Protected</span>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">SSL Certificates</span>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">2 Expiring</span>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Intrusion Detection</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Monitoring</span>
+                                </div>
+
+                                <div class="pt-4 border-t border-gray-200">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Recent Security Events</h4>
+                                    <div class="space-y-2">
+                                        <div class="text-xs text-gray-600">
+                                            <span class="text-red-600">•</span> Failed login attempt blocked (IP: 192.168.1.100)
+                                        </div>
+                                        <div class="text-xs text-gray-600">
+                                            <span class="text-yellow-600">•</span> Unusual API traffic detected
+                                        </div>
+                                        <div class="text-xs text-gray-600">
+                                            <span class="text-green-600">•</span> Security patch applied successfully
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resource Monitoring -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Resource Monitoring</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-900">CPU Usage</span>
+                                        <span class="text-sm text-gray-600">67%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 67%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-900">Memory Usage</span>
+                                        <span class="text-sm text-gray-600">43%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 43%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-900">Disk Usage</span>
+                                        <span class="text-sm text-gray-600">89%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-red-500 h-2 rounded-full" style="width: 89%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-900">Network I/O</span>
+                                        <span class="text-sm text-gray-600">34%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 34%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tenant Management Section -->
+            <div id="tenant-management-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Multi-Tenant Management</h1>
+                            <p class="text-gray-600 mt-1">Manage all tenant organizations and their configurations</p>
+                        </div>
+                        <button class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700">
+                            <i class="fas fa-plus mr-2"></i>Add New Tenant
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tenant Overview Stats -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                        <div class="text-2xl font-bold text-blue-600">47</div>
+                        <div class="text-sm text-gray-600">Active Tenants</div>
+                        <div class="text-xs text-blue-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> 3 new this month
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                        <div class="text-2xl font-bold text-green-600">156K</div>
+                        <div class="text-sm text-gray-600">Total Users</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-users"></i> Across all tenants
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+                        <div class="text-2xl font-bold text-purple-600">2.4TB</div>
+                        <div class="text-sm text-gray-600">Data Storage</div>
+                        <div class="text-xs text-purple-600 mt-1">
+                            <i class="fas fa-hdd"></i> System-wide
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                        <div class="text-2xl font-bold text-yellow-600">99.8%</div>
+                        <div class="text-sm text-gray-600">Uptime SLA</div>
+                        <div class="text-xs text-yellow-600 mt-1">
+                            <i class="fas fa-clock"></i> This month
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tenant List -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Tenant Organizations</h3>
+                            <div class="flex space-x-2">
+                                <button class="bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700">
+                                    <i class="fas fa-download mr-1"></i>Export Report
+                                </button>
+                                <button class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+                                    <i class="fas fa-sync mr-1"></i>Sync All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 hover:bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-hospital text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">HealthSystem West</h4>
+                                        <p class="text-sm text-gray-500">2,340 users • 342GB storage • Enterprise Plan</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Critical</span>
+                                    <div class="flex space-x-1">
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <button class="text-orange-600 hover:text-orange-700">
+                                            <i class="fas fa-chart-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 hover:bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-clinic-medical text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Metro Medical Group</h4>
+                                        <p class="text-sm text-gray-500">1,789 users • 234GB storage • Professional Plan</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Healthy</span>
+                                    <div class="flex space-x-1">
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <button class="text-orange-600 hover:text-orange-700">
+                                            <i class="fas fa-chart-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Overview Section -->
+            <div id="global-overview-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Global System Overview</h1>
+                    <p class="text-gray-600 mt-1">Comprehensive view of all system components and performance</p>
+                </div>
+
+                <!-- Global Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-globe text-green-600 text-2xl"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-900">47</div>
+                            <div class="text-sm text-gray-600">Global Tenants</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-users text-blue-600 text-2xl"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-900">156,342</div>
+                            <div class="text-sm text-gray-600">Total System Users</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-file text-purple-600 text-2xl"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-900">2.4M</div>
+                            <div class="text-sm text-gray-600">Documents Processed</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-shield-alt text-yellow-600 text-2xl"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-900">99.99%</div>
+                            <div class="text-sm text-gray-600">Security Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regional Distribution -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Global Tenant Distribution</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center p-4">
+                            <div class="text-3xl font-bold text-blue-600">23</div>
+                            <div class="text-sm text-gray-600">North America</div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 49%"></div>
+                            </div>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="text-3xl font-bold text-green-600">18</div>
+                            <div class="text-sm text-gray-600">Europe</div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 38%"></div>
+                            </div>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="text-3xl font-bold text-purple-600">6</div>
+                            <div class="text-sm text-gray-600">Asia Pacific</div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-purple-500 h-2 rounded-full" style="width: 13%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Infrastructure Section -->
+            <div id="infrastructure-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Infrastructure Management</h1>
+                    <p class="text-gray-600 mt-1">Monitor and control system infrastructure across all environments</p>
+                </div>
+
+                <!-- Infrastructure Health -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Production Environment</h3>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Healthy</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Load Balancers</span>
+                                <span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>4/4 Active</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">App Servers</span>
+                                <span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>8/8 Running</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Database Cluster</span>
+                                <span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Primary + 2 Replicas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Staging Environment</h3>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Maintenance</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">App Servers</span>
+                                <span class="text-yellow-600"><i class="fas fa-exclamation-triangle mr-1"></i>2/4 Running</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Database</span>
+                                <span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Online</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Storage</span>
+                                <span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Available</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Development Environment</h3>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">CI/CD Pipeline</span>
+                                <span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Running</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Test Coverage</span>
+                                <span class="text-blue-600"><i class="fas fa-chart-line mr-1"></i>87%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Code Quality</span>
+                                <span class="text-green-600"><i class="fas fa-star mr-1"></i>A+ Grade</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Control Section -->
+            <div id="database-control-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Database Administration</h1>
+                            <p class="text-gray-600 mt-1">Advanced database management and optimization controls</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                                <i class="fas fa-database mr-2"></i>Full Backup
+                            </button>
+                            <button class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700">
+                                <i class="fas fa-tools mr-2"></i>Maintenance Mode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Cluster Status -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Primary Database</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Connection Status</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Connected</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">CPU Usage</span>
+                                <span class="text-sm text-gray-900">34%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Memory Usage</span>
+                                <span class="text-sm text-gray-900">67%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Storage Used</span>
+                                <span class="text-sm text-gray-900">1.8TB / 5TB</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Active Connections</span>
+                                <span class="text-sm text-gray-900">847</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Replica Databases</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-green-50 rounded">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Read Replica 1</p>
+                                    <p class="text-xs text-gray-500">us-east-1</p>
+                                </div>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Online</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-green-50 rounded">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Read Replica 2</p>
+                                    <p class="text-xs text-gray-500">us-west-2</p>
+                                </div>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Online</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-yellow-50 rounded">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Backup Replica</p>
+                                    <p class="text-xs text-gray-500">eu-central-1</p>
+                                </div>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Syncing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Operations -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Database Operations</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 text-gray-600 hover:text-orange-600">
+                            <i class="fas fa-play text-2xl mb-2"></i>
+                            <span class="text-sm">Run Query</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 text-gray-600 hover:text-orange-600">
+                            <i class="fas fa-broom text-2xl mb-2"></i>
+                            <span class="text-sm">Cleanup Tasks</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 text-gray-600 hover:text-orange-600">
+                            <i class="fas fa-chart-bar text-2xl mb-2"></i>
+                            <span class="text-sm">Performance Stats</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 text-gray-600 hover:text-orange-600">
+                            <i class="fas fa-history text-2xl mb-2"></i>
+                            <span class="text-sm">Query History</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Center Section -->
+            <div id="security-center-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Advanced Security Center</h1>
+                    <p class="text-gray-600 mt-1">Enterprise security monitoring and threat management</p>
+                </div>
+
+                <!-- Security Threat Level -->
+                <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow p-6 text-white mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-medium">Current Threat Level</h3>
+                            <p class="text-3xl font-bold">LOW</p>
+                            <p class="text-green-100 text-sm">All security systems operational</p>
+                        </div>
+                        <div class="w-16 h-16 bg-green-400 bg-opacity-30 rounded-full flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Controls -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Access Control</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Two-Factor Authentication</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Enforced</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Password Policy</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Strict</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Session Timeout</span>
+                                <span class="text-sm text-gray-900">30 minutes</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">IP Whitelisting</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">47 Ranges</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Threat Detection</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Intrusion Detection</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Anomaly Detection</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Learning</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Vulnerability Scanning</span>
+                                <span class="text-sm text-gray-900">Daily</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Threat Intelligence</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Updated</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Monitoring Section -->
+            <div id="monitoring-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Advanced System Monitoring</h1>
+                    <p class="text-gray-600 mt-1">Real-time monitoring across all system components and tenants</p>
+                </div>
+
+                <!-- Monitoring Dashboard -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">System Load Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="loadChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Response Time Metrics</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-900">API Response Time</span>
+                                    <span class="text-sm text-gray-600">245ms</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>Target: <300ms</span>
+                                    <span class="text-green-600">✓ Within SLA</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-900">Database Query Time</span>
+                                    <span class="text-sm text-gray-600">89ms</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 65%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>Target: <100ms</span>
+                                    <span class="text-blue-600">✓ Excellent</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-900">Page Load Time</span>
+                                    <span class="text-sm text-gray-600">1.2s</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>Target: <1.5s</span>
+                                    <span class="text-yellow-600">⚠ Monitor</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Monitoring Tools -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Monitoring Tools</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 text-gray-600 hover:text-orange-600">
+                            <i class="fas fa-heartbeat text-2xl mb-2"></i>
+                            <span class="text-sm">Health Checks</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 text-gray-600 hover:text-orange-600">
+                            <i class="fas fa-chart-area text-2xl mb-2"></i>
+                            <span class="text-sm">Performance Metrics</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 text-gray-600 hover:text-orange-600">
+                            <i class="fas fa-bell text-2xl mb-2"></i>
+                            <span class="text-sm">Alert Management</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 text-gray-600 hover:text-orange-600">
+                            <i class="fas fa-bug text-2xl mb-2"></i>
+                            <span class="text-sm">Error Tracking</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 text-gray-600 hover:text-orange-600">
+                            <i class="fas fa-file-alt text-2xl mb-2"></i>
+                            <span class="text-sm">System Logs</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for Super Admin
+        function showSuperAdminSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-orange-50', 'text-orange-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-orange-50', 'text-orange-700');
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Initialize with control center view
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuperAdminSection('control-center');
+        });
+
+        // Load Chart for System Monitoring - High quality
+        const loadCtx = document.getElementById('loadChart');
+        if (loadCtx) {
+            new Chart(loadCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Database', 'API Services', 'File Storage', 'Cache'],
+                    datasets: [{
+                        data: [35, 28, 22, 15],
+                        backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6'],
+                        borderWidth: 3,
+                        borderColor: '#ffffff',
+                        hoverBorderWidth: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                color: '#374151',
+                                font: { size: 12, weight: '500' }
+                            max: 80,
+                            grid: { color: '#f3f4f6' },
+                            ticks: {
+                                stepSize: 20,
+                                maxTicksLimit: 5
+                            }
+                        },
+                        x: {
+                            grid: { color: '#f3f4f6' }
+                        }
+                    }
+                }
+            });
+        }
+        // System Performance Chart - Fixed sizing
+        const perfCtx = document.getElementById('performanceChart');
+        if (perfCtx) {
+            perfCtx.width = 400;
+            perfCtx.height = 200;
+            
+            new Chart(perfCtx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                    datasets: [{
+                        label: 'CPU %',
+                        data: [45, 52, 68, 74, 67, 58, 49],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        pointRadius: 3
+                    }, {
+                        label: 'Memory %',
+                        data: [32, 38, 41, 45, 43, 40, 35],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: '#f3f4f6' }
+                        },
+                        x: {
+                            grid: { color: '#f3f4f6' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, padding: 20 }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

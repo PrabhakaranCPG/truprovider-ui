@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced System Admin - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .chart-container { height: 200px; }
+            .mobile-table { font-size: 14px; }
+        }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .desktop-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-red-600 rounded flex items-center justify-center hover:bg-red-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="desktop-nav hidden md:ml-6 md:flex md:space-x-4 lg:space-x-8">
+                        <a href="#" class="border-red-500 text-red-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">System Admin</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Users</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Security</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search users..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin+User&background=dc2626&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Admin User</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn fixed top-4 left-4 z-50 p-2 bg-red-600 text-white rounded-md md:hidden" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Enhanced Sidebar -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 fixed md:relative z-40 h-full transition-transform duration-300">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">System Admin</h2>
+                <nav class="space-y-1">
+                    <a href="#dashboard" class="bg-red-50 text-red-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSystemSection('dashboard')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#user-management" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSystemSection('user-management')">
+                        <i class="fas fa-users mr-3"></i>
+                        User Management
+                    </a>
+                    <a href="#role-management" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSystemSection('role-management')">
+                        <i class="fas fa-user-shield mr-3"></i>
+                        Role Management
+                    </a>
+                    <a href="#department-management" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSystemSection('department-management')">
+                        <i class="fas fa-building mr-3"></i>
+                        Department Management
+                    </a>
+                    <a href="#metadata-management" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSystemSection('metadata-management')">
+                        <i class="fas fa-tags mr-3"></i>
+                        Metadata Management
+                    </a>
+                    <a href="#file-templates" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSystemSection('file-templates')">
+                        <i class="fas fa-file-alt mr-3"></i>
+                        File Templates
+                    </a>
+                    <a href="#unmapped-docs" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSystemSection('unmapped-docs')">
+                        <i class="fas fa-question-circle mr-3"></i>
+                        Unmapped Documents
+                    </a>
+                    <a href="#release-notes" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showSystemSection('release-notes')">
+                        <i class="fas fa-sticky-note mr-3"></i>
+                        Release Notes
+                    </a>
+                </nav>
+
+                <!-- Quick Actions -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md">
+                            <i class="fas fa-plus mr-2"></i>Add User
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                            <i class="fas fa-download mr-2"></i>Export Logs
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                            <i class="fas fa-sync mr-2"></i>System Sync
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 overflow-y-auto md:ml-0">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content p-4 md:p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">System Administration Dashboard</h1>
+                            <p class="text-gray-600 mt-1">Comprehensive system management: Users, Roles, Departments, Metadata, and Security</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <select class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Departments</option>
+                                <option>IT</option>
+                                <option>HR</option>
+                                <option>Operations</option>
+                            </select>
+                            <button class="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700">
+                                <i class="fas fa-user-plus mr-2"></i>Add User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Overview Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Users</p>
+                                <p class="text-3xl font-bold text-gray-900">342</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    5 new this week
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-users text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active Sessions</p>
+                                <p class="text-3xl font-bold text-gray-900">127</p>
+                                <p class="text-xs text-blue-600 flex items-center mt-2">
+                                    <i class="fas fa-circle mr-1"></i>
+                                    Real-time count
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-desktop text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Failed Login Attempts</p>
+                                <p class="text-3xl font-bold text-gray-900">23</p>
+                                <p class="text-xs text-yellow-600 flex items-center mt-2">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    Last 24 hours
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-exclamation-circle text-yellow-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">System Uptime</p>
+                                <p class="text-3xl font-bold text-gray-900">99.8%</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Excellent
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-server text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Activity and Security Alerts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <!-- User Activity Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">User Activity</h3>
+                            <select class="text-sm border border-gray-300 rounded-md px-2 py-1">
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                                <option>Last 90 days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Security Alerts -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-900">Security Alerts</h3>
+                                <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">3 Active</span>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-exclamation-triangle text-red-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-gray-900">Multiple Failed Login Attempts</h4>
+                                        <p class="text-sm text-gray-600">User: jsmith@company.com</p>
+                                        <p class="text-xs text-gray-500 mt-1">15 minutes ago</p>
+                                    </div>
+                                    <button class="text-red-600 hover:text-red-700 text-sm">Block User</button>
+                                </div>
+                            </div>
+                            
+                            <div class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-shield-alt text-yellow-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-gray-900">Unusual Access Pattern</h4>
+                                        <p class="text-sm text-gray-600">IP: 192.168.1.100</p>
+                                        <p class="text-xs text-gray-500 mt-1">1 hour ago</p>
+                                    </div>
+                                    <button class="text-yellow-600 hover:text-yellow-700 text-sm">Investigate</button>
+                                </div>
+                            </div>
+
+                            <div class="px-6 py-4">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-key text-orange-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-gray-900">Password Policy Violation</h4>
+                                        <p class="text-sm text-gray-600">User: mdavis@company.com</p>
+                                        <p class="text-xs text-gray-500 mt-1">3 hours ago</p>
+                                    </div>
+                                    <button class="text-orange-600 hover:text-orange-700 text-sm">Force Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Table -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">User Management</h3>
+                            <div class="flex items-center space-x-2">
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded hover:bg-gray-200">
+                                    <i class="fas fa-filter mr-1"></i>Filter
+                                </button>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded hover:bg-gray-200">
+                                    <i class="fas fa-download mr-1"></i>Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=John+Smith&background=3b82f6&color=fff" alt="">
+                                            <div class="ml-3">
+                                                <div class="text-sm font-medium text-gray-900">John Smith</div>
+                                                <div class="text-sm text-gray-500">jsmith@company.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                            Admin
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">IT</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2 hours ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Sarah+Wilson&background=10b981&color=fff" alt="">
+                                            <div class="ml-3">
+                                                <div class="text-sm font-medium text-gray-900">Sarah Wilson</div>
+                                                <div class="text-sm text-gray-500">swilson@company.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Supervisor
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Operations</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">5 minutes ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="bg-white px-6 py-3 border-t border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing <span class="font-medium">1</span> to <span class="font-medium">25</span> of <span class="font-medium">342</span> users
+                                </p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">Previous</button>
+                                <button class="px-3 py-1 bg-red-600 text-white text-sm rounded">1</button>
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">3</button>
+                                <button class="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Section -->
+            <div id="user-management-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">User Management</h1>
+                            <p class="text-gray-600 mt-1">Create, manage, and assign users with roles and departments</p>
+                        </div>
+                        <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                            <i class="fas fa-user-plus mr-2"></i>Create New User
+                        </button>
+                    </div>
+                </div>
+
+                <!-- User Search and Actions -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <input type="text" placeholder="Search users..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Roles</option>
+                                <option>Admin</option>
+                                <option>Supervisor</option>
+                                <option>Specialist</option>
+                                <option>Coordinator</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Departments</option>
+                                <option>IT</option>
+                                <option>Operations</option>
+                                <option>HR</option>
+                                <option>Finance</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced User Table -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">System Users</h3>
+                            <div class="flex items-center space-x-2">
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded hover:bg-gray-200">
+                                    <i class="fas fa-download mr-1"></i>Export Users
+                                </button>
+                                <button class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded hover:bg-blue-200">
+                                    <i class="fas fa-sync mr-1"></i>Sync LDAP
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-users text-4xl mb-4"></i>
+                        <p>342 users in the system - Use search to find and manage specific users</p>
+                        <p class="text-sm mt-2">Create, edit, assign supervisors, roles, and departments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role Management Section -->
+            <div id="role-management-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Role Management</h1>
+                            <p class="text-gray-600 mt-1">Create and manage user roles with access privileges</p>
+                        </div>
+                        <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                            <i class="fas fa-plus mr-2"></i>Create New Role
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Roles Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">System Administrator</h3>
+                            <div class="flex space-x-1">
+                                <button class="text-blue-600 hover:text-blue-700 p-1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-700 p-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Full system access and administrative privileges</p>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-check mr-2"></i>User Management
+                            </div>
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-check mr-2"></i>Role Management
+                            </div>
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-check mr-2"></i>System Configuration
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-500">
+                            <strong>3 users</strong> assigned to this role
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Supervisor</h3>
+                            <div class="flex space-x-1">
+                                <button class="text-blue-600 hover:text-blue-700 p-1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-700 p-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Supervisory access with team management capabilities</p>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-check mr-2"></i>Team Oversight
+                            </div>
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-check mr-2"></i>Work Assignment
+                            </div>
+                            <div class="flex items-center text-gray-400">
+                                <i class="fas fa-times mr-2"></i>System Configuration
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-500">
+                            <strong>12 users</strong> assigned to this role
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Specialist</h3>
+                            <div class="flex space-x-1">
+                                <button class="text-blue-600 hover:text-blue-700 p-1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-700 p-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Standard user access for processing and data entry</p>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-check mr-2"></i>Data Processing
+                            </div>
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-check mr-2"></i>Document Review
+                            </div>
+                            <div class="flex items-center text-gray-400">
+                                <i class="fas fa-times mr-2"></i>User Management
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-500">
+                            <strong>289 users</strong> assigned to this role
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department Management Section -->
+            <div id="department-management-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Department Management</h1>
+                            <p class="text-gray-600 mt-1">Setup new departments and edit department details</p>
+                        </div>
+                        <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                            <i class="fas fa-plus mr-2"></i>New Department Setup
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Department List -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-laptop-code text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900">IT Department</h3>
+                                    <p class="text-sm text-gray-500">Information Technology</p>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="text-gray-500">Total Users</p>
+                                <p class="text-xl font-bold text-gray-900">45</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500">Active Users</p>
+                                <p class="text-xl font-bold text-green-600">42</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-cogs text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900">Operations</h3>
+                                    <p class="text-sm text-gray-500">Daily Operations</p>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="text-gray-500">Total Users</p>
+                                <p class="text-xl font-bold text-gray-900">178</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500">Active Users</p>
+                                <p class="text-xl font-bold text-green-600">156</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-user-friends text-purple-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900">HR Department</h3>
+                                    <p class="text-sm text-gray-500">Human Resources</p>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="text-gray-500">Total Users</p>
+                                <p class="text-xl font-bold text-gray-900">23</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500">Active Users</p>
+                                <p class="text-xl font-bold text-green-600">21</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-calculator text-yellow-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900">Finance</h3>
+                                    <p class="text-sm text-gray-500">Financial Operations</p>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="text-gray-500">Total Users</p>
+                                <p class="text-xl font-bold text-gray-900">15</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500">Active Users</p>
+                                <p class="text-xl font-bold text-green-600">14</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metadata Management Section -->
+            <div id="metadata-management-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Metadata Management</h1>
+                            <p class="text-gray-600 mt-1">Create, edit, search, and export metadata values</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                                <i class="fas fa-download mr-2"></i>Export to Excel
+                            </button>
+                            <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                                <i class="fas fa-plus mr-2"></i>Add Metadata
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metadata Search -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <input type="text" placeholder="Search metadata..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                                <option>All Categories</option>
+                                <option>Provider Types</option>
+                                <option>Specialties</option>
+                                <option>Status Codes</option>
+                                <option>Geographic Regions</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                                <i class="fas fa-search mr-2"></i>Search Metadata
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metadata Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Metadata Values</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Modified</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Provider Types
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">PROFESSIONAL</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Individual Healthcare Professional</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/15/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                            Specialties
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">CARDIOLOGY</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Cardiovascular Medicine</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/12/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Templates Section -->
+            <div id="file-templates-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">File Templates</h1>
+                            <p class="text-gray-600 mt-1">Manage system file templates and document formats</p>
+                        </div>
+                        <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                            <i class="fas fa-plus mr-2"></i>Upload Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Categories -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <i class="fas fa-file-excel text-green-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Data Templates</h3>
+                                <p class="text-sm text-gray-500">Import/Export formats</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Provider Data Import</span>
+                                <button class="text-red-600 hover:text-red-700"><i class="fas fa-download"></i></button>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Bulk Upload Template</span>
+                                <button class="text-red-600 hover:text-red-700"><i class="fas fa-download"></i></button>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Metadata Export</span>
+                                <button class="text-red-600 hover:text-red-700"><i class="fas fa-download"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <i class="fas fa-file-word text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">Document Templates</h3>
+                                <p class="text-sm text-gray-500">Letter & report formats</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Welcome Letter</span>
+                                <button class="text-red-600 hover:text-red-700"><i class="fas fa-edit"></i></button>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Status Update</span>
+                                <button class="text-red-600 hover:text-red-700"><i class="fas fa-edit"></i></button>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Contract Template</span>
+                                <button class="text-red-600 hover:text-red-700"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <i class="fas fa-cog text-purple-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">System Templates</h3>
+                                <p class="text-sm text-gray-500">Configuration files</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">User Role Template</span>
+                                <button class="text-red-600 hover:text-red-700"><i class="fas fa-edit"></i></button>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Department Setup</span>
+                                <button class="text-red-600 hover:text-red-700"><i class="fas fa-edit"></i></button>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Workflow Config</span>
+                                <button class="text-red-600 hover:text-red-700"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unmapped Documents Section -->
+            <div id="unmapped-docs-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Unmapped Documents List</h1>
+                            <p class="text-gray-600 mt-1">Documents that need manual classification and mapping</p>
+                        </div>
+                        <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                            <i class="fas fa-map mr-2"></i>Bulk Map Documents
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Unmapped Documents Stats -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+                        <div class="text-xl font-bold text-red-600">47</div>
+                        <div class="text-sm text-gray-600">Total Unmapped</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+                        <div class="text-xl font-bold text-yellow-600">23</div>
+                        <div class="text-sm text-gray-600">This Week</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+                        <div class="text-xl font-bold text-blue-600">15</div>
+                        <div class="text-sm text-gray-600">High Priority</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+                        <div class="text-xl font-bold text-green-600">89%</div>
+                        <div class="text-sm text-gray-600">Auto-Map Success</div>
+                    </div>
+                </div>
+
+                <!-- Unmapped Documents List -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Pending Document Classification</h3>
+                    </div>
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-question-circle text-4xl mb-4"></i>
+                        <p>47 documents require manual classification and mapping</p>
+                        <p class="text-sm mt-2">Review and assign appropriate categories to enable proper processing</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Release Notes Section -->
+            <div id="release-notes-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Release Notes</h1>
+                            <p class="text-gray-600 mt-1">System updates, new features, and version history</p>
+                        </div>
+                        <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                            <i class="fas fa-plus mr-2"></i>Add Release Note
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Release Timeline -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Updates</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-green-100 p-2 rounded-full">
+                                    <i class="fas fa-rocket text-green-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-sm font-medium text-gray-900">Version 2.4.1 Released</h4>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Latest</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">Enhanced Common Section with Notes, Checklists, and Document Management</p>
+                                    <ul class="text-xs text-gray-500 mt-2 space-y-1">
+                                        <li>• Added Notes popup functionality</li>
+                                        <li>• Improved Audit Log search with Group By filters</li>
+                                        <li>• Enhanced Document categorization</li>
+                                    </ul>
+                                    <p class="text-xs text-gray-400 mt-2">Released: March 16, 2024</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-blue-100 p-2 rounded-full">
+                                    <i class="fas fa-tools text-blue-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-sm font-medium text-gray-900">Version 2.3.8 - Bug Fixes</h4>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Stable</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">Critical security patches and performance improvements</p>
+                                    <ul class="text-xs text-gray-500 mt-2 space-y-1">
+                                        <li>• Fixed user session timeout issues</li>
+                                        <li>• Improved metadata search performance</li>
+                                        <li>• Enhanced document upload validation</li>
+                                    </ul>
+                                    <p class="text-xs text-gray-400 mt-2">Released: March 10, 2024</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for System Admin
+        function showSystemSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-red-50', 'text-red-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-red-50', 'text-red-700');
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Initialize with dashboard view
+        document.addEventListener('DOMContentLoaded', function() {
+            showSystemSection('dashboard');
+        });
+        // User Activity Chart - High quality
+        const activityCtx = document.getElementById('activityChart');
+        if (activityCtx) {
+            new Chart(activityCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Active Users',
+                        data: [85, 112, 98, 127, 134, 67, 45],
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#dc2626',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 150,
+                            grid: {
+                                color: '#e5e7eb',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                stepSize: 25,
+                                color: '#6b7280',
+                                font: { size: 12 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#e5e7eb',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 8
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

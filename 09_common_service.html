@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Common Service - TruProvider</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .service-status-dot { animation: pulse 2s infinite; }
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .chart-container { height: 200px; }
+        }
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .desktop-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Enhanced Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="h-8 w-32 bg-yellow-600 rounded flex items-center justify-center hover:bg-yellow-700 transition-colors cursor-pointer">
+                            <span class="text-white font-bold text-sm">TruProvider</span>
+                        </a>
+                    </div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-pink-500 text-pink-600 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Services</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">API Gateway</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 border-b-2 px-1 pt-1 pb-4 text-sm font-medium">Monitoring</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search services..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-500 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full service-status-dot"></span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Service+Manager&background=ec4899&color=fff" alt="User">
+                        <span class="text-sm font-medium text-gray-700">Service Manager</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn fixed top-4 left-4 z-50 p-2 bg-yellow-600 text-white rounded-md md:hidden" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Enhanced Sidebar -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 fixed md:relative z-40 h-full transition-transform duration-300">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Common Services</h2>
+                <nav class="space-y-1">
+                    <a href="#dashboard" class="bg-pink-50 text-pink-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonServiceSection('dashboard')">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#center-management" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonServiceSection('center-management')">
+                        <i class="fas fa-building mr-3"></i>
+                        Center Management
+                    </a>
+                    <a href="#tax-management" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonServiceSection('tax-management')">
+                        <i class="fas fa-receipt mr-3"></i>
+                        Tax Management
+                    </a>
+                    <a href="#network-combination" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonServiceSection('network-combination')">
+                        <i class="fas fa-network-wired mr-3"></i>
+                        Network Combination
+                    </a>
+                    <a href="#provider-details" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonServiceSection('provider-details')">
+                        <i class="fas fa-user-md mr-3"></i>
+                        Provider Details
+                    </a>
+                    <a href="#member-move" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" onclick="showCommonServiceSection('member-move')">
+                        <i class="fas fa-people-arrows mr-3"></i>
+                        Member Move
+                    </a>
+                </nav>
+
+                <!-- Service Categories -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Service Types</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Core Services</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">8</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">External APIs</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">12</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Background Jobs</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">5</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Webhooks</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 overflow-y-auto md:ml-0">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content p-4 md:p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Common Service Management</h1>
+                            <p class="text-gray-600 mt-1">Manage shared master data with center, tax, and member movement services</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-lg">
+                                <div class="w-2 h-2 bg-green-500 rounded-full service-status-dot"></div>
+                                <span class="text-sm text-green-700 font-medium">All Systems Operational</span>
+                            </div>
+                            <button class="bg-pink-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-pink-700">
+                                <i class="fas fa-plus mr-2"></i>Deploy Service
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Health Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active Services</p>
+                                <p class="text-3xl font-bold text-gray-900">28</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
+                                    All healthy
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-server text-pink-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">API Calls Today</p>
+                                <p class="text-3xl font-bold text-gray-900">2.4M</p>
+                                <p class="text-xs text-blue-600 flex items-center mt-2">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    15% increase
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-exchange-alt text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Avg Response Time</p>
+                                <p class="text-3xl font-bold text-gray-900">125ms</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <i class="fas fa-tachometer-alt mr-1"></i>
+                                    Excellent
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Error Rate</p>
+                                <p class="text-3xl font-bold text-gray-900">0.03%</p>
+                                <p class="text-xs text-green-600 flex items-center mt-2">
+                                    <i class="fas fa-shield-alt mr-1"></i>
+                                    Within SLA
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Performance and API Gateway -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Service Performance Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Service Performance</h3>
+                            <select class="text-sm border border-gray-300 rounded-md px-2 py-1">
+                                <option>Last 24 hours</option>
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- API Gateway Status -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">API Gateway Status</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3 service-status-dot"></div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900">Provider API Gateway</h4>
+                                            <p class="text-xs text-gray-600">gateway.truprovider.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-medium text-green-700">Healthy</p>
+                                        <p class="text-xs text-gray-500">99.98% uptime</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full mr-3 service-status-dot"></div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900">Authentication Service</h4>
+                                            <p class="text-xs text-gray-600">auth.truprovider.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-medium text-blue-700">Active</p>
+                                        <p class="text-xs text-gray-500">2,847 sessions</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-purple-500 rounded-full mr-3 service-status-dot"></div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900">Data Processing Engine</h4>
+                                            <p class="text-xs text-gray-600">data.truprovider.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-medium text-purple-700">Processing</p>
+                                        <p class="text-xs text-gray-500">156 jobs queued</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900">Notification Service</h4>
+                                            <p class="text-xs text-gray-600">notify.truprovider.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-medium text-yellow-700">Degraded</p>
+                                        <p class="text-xs text-gray-500">High latency</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Management Table -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Service Management</h3>
+                            <div class="flex items-center space-x-2">
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded hover:bg-gray-200">
+                                    <i class="fas fa-filter mr-1"></i>Filter
+                                </button>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded hover:bg-gray-200">
+                                    <i class="fas fa-sync mr-1"></i>Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requests/min</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Response Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-user-check text-pink-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Provider Verification Service</div>
+                                                <div class="text-sm text-gray-500">provider-verification-v2</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Core API
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            <span class="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
+                                            Healthy
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1,247</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">89ms</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-envelope text-purple-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Email Notification Service</div>
+                                                <div class="text-sm text-gray-500">email-service-v1</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                            Messaging
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            <span class="w-2 h-2 bg-yellow-400 rounded-full mr-1"></span>
+                                            Degraded
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">456</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">340ms</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                            <button class="text-yellow-600 hover:text-yellow-900">
+                                                <i class="fas fa-tools"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-database text-green-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Data Sync Service</div>
+                                                <div class="text-sm text-gray-500">data-sync-v3</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Background
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            <span class="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">89</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">45ms</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-gray-600 hover:text-gray-900">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-stop"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Management Section -->
+            <div id="center-management-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Center Management</h1>
+                            <p class="text-gray-600 mt-1">View, add, and maintain center details with full audit tracking</p>
+                        </div>
+                        <button class="bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-700">
+                            <i class="fas fa-plus mr-2"></i>Add Center
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Center Search and Filters -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Search Centers</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Center Name</label>
+                            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500" placeholder="Enter center name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Center ID</label>
+                            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500" placeholder="Enter center ID">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500">
+                                <option>All Statuses</option>
+                                <option>Active</option>
+                                <option>Inactive</option>
+                                <option>Pending</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-700">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Centers Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Centers Directory</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Center Details</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Modified</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                                                <i class="fas fa-hospital text-pink-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Metro Health Center</div>
+                                                <div class="text-sm text-gray-500">CTR-001 • Multi-specialty</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">New York, NY</div>
+                                        <div class="text-sm text-gray-500">Manhattan District</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/15/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-700">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-700">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                                <i class="fas fa-clinic-medical text-blue-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Westside Clinic</div>
+                                                <div class="text-sm text-gray-500">CTR-002 • Primary Care</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Los Angeles, CA</div>
+                                        <div class="text-sm text-gray-500">West LA District</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">03/12/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-700">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-700">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax Management Section -->
+            <div id="tax-management-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Tax Management</h1>
+                            <p class="text-gray-600 mt-1">Manage Tax IDs for billing and payment processing with duplicate prevention</p>
+                        </div>
+                        <button class="bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-700">
+                            <i class="fas fa-plus mr-2"></i>Add Tax ID
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tax Search -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Search Tax Records</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tax ID</label>
+                            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500" placeholder="Enter Tax ID">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Provider Name</label>
+                            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500" placeholder="Enter provider name">
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-700">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tax Records Management -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Tax Records List -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">Tax Records</h3>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="px-6 py-4 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">Tax ID: 12-3456789</div>
+                                        <div class="text-sm text-gray-500">Metro Health Systems</div>
+                                        <div class="text-xs text-gray-400 mt-1">Pay-to: Corporate Billing</div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 hover:bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">Tax ID: 98-7654321</div>
+                                        <div class="text-sm text-gray-500">Westside Medical Group</div>
+                                        <div class="text-xs text-gray-400 mt-1">Pay-to: Direct Payment</div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tax Details Form -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Tax Pay-To Details</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tax ID Number</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500" placeholder="XX-XXXXXXX">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Legal Entity Name</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Pay-To Address</label>
+                                <textarea class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500" rows="3"></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
+                                    <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                    <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                            </div>
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
+                                <button type="submit" class="px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700">Save Tax Details</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Combination Section -->
+            <div id="network-combination-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Network Combination Management</h1>
+                            <p class="text-gray-600 mt-1">Configure and manage network combinations and AGAG details</p>
+                        </div>
+                        <button class="bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-700">
+                            <i class="fas fa-plus mr-2"></i>Add Network Combination
+                    </div>
+                </div>
+
+                <!-- Member Move Section -->
+                <div id="member-move-section" class="section-content p-6 hidden">
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">Member Move Audit</h1>
+                                <p class="text-gray-600 mt-1">Track members affected by provider location or network changes</p>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Network ID:</span>
+                                <span class="font-medium">NET-001</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Network Type:</span>
+                                <span class="font-medium">HMO</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Coverage Area:</span>
+                                <span class="font-medium">State-wide</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Providers:</span>
+                                <span class="font-medium text-green-600">1,247 Active</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 px-4 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50">
+                            <i class="fas fa-cog mr-2"></i>Configure
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Secondary Network</h3>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Network ID:</span>
+                                <span class="font-medium">NET-002</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Network Type:</span>
+                                <span class="font-medium">PPO</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Coverage Area:</span>
+                                <span class="font-medium">Regional</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Providers:</span>
+                                <span class="font-medium text-green-600">856 Active</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 px-4 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50">
+                            <i class="fas fa-cog mr-2"></i>Configure
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Network AGAG Details -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Network AGAG Details</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Agreement ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Network</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Effective Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">AGAG-001</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Primary Network</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Master Agreement</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">01/01/2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-blue-600 hover:text-blue-700 mr-3">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-gray-600 hover:text-gray-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provider Details Section -->
+            <div id="provider-details-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Provider Details Management</h1>
+                            <p class="text-gray-600 mt-1">Manage provider information, documents, contacts, and notes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provider Details Tabs -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <nav class="flex space-x-8">
+                            <button class="text-pink-600 border-b-2 border-pink-600 pb-2 px-1 text-sm font-medium">Provider Info</button>
+                            <button class="text-gray-500 hover:text-gray-700 pb-2 px-1 text-sm font-medium">Documents</button>
+                            <button class="text-gray-500 hover:text-gray-700 pb-2 px-1 text-sm font-medium">Contact</button>
+                            <button class="text-gray-500 hover:text-gray-700 pb-2 px-1 text-sm font-medium">Notes</button>
+                            <button class="text-gray-500 hover:text-gray-700 pb-2 px-1 text-sm font-medium">Audit Log</button>
+                        </nav>
+                    </div>
+                    <div class="p-6">
+                        <!-- Provider Information Tab Content -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <h4 class="text-lg font-medium text-gray-900">Basic Information</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Provider ID</label>
+                                        <input type="text" value="PRV-001" class="w-full border border-gray-300 rounded-md px-3 py-2" readonly>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">NPI Number</label>
+                                        <input type="text" value="1234567890" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Provider Name</label>
+                                    <input type="text" value="Dr. John Smith" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
+                                    <select class="w-full border border-gray-300 rounded-md px-3 py-2">
+                                        <option>Cardiology</option>
+                                        <option>Internal Medicine</option>
+                                        <option>Family Medicine</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <h4 class="text-lg font-medium text-gray-900">Contact Information</h4>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Primary Phone</label>
+                                    <input type="text" value="(555) 123-4567" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" value="jsmith@medical.com" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Practice Address</label>
+                                    <textarea class="w-full border border-gray-300 rounded-md px-3 py-2" rows="3">123 Medical Drive\nSuite 100\nHealthtown, ST 12345</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
+                            <button class="px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Member Move Section -->
+            <div id="member-move-section" class="section-content p-6 hidden">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Member Move Audit</h1>
+                            <p class="text-gray-600 mt-1">Track members affected by provider location or network changes</p>
+                        </div>
+                        <button class="bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-700">
+                            <i class="fas fa-plus mr-2"></i>New Move Request
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Move Request Tabs -->
+                <div class="mb-6">
+                    <nav class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                        <button class="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm">Current Requests</button>
+                        <button class="flex-1 px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900">Historical Requests</button>
+                    </nav>
+                </div>
+
+                <!-- Current Requests -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Current Move Requests</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-people-arrows text-yellow-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Network Change - Dr. Johnson</h4>
+                                        <p class="text-sm text-gray-500">Move from HMO Primary to PPO Secondary</p>
+                                        <div class="flex items-center mt-2 text-xs text-gray-400">
+                                            <span class="mr-4">Affected Members: 847</span>
+                                            <span class="mr-4">Created: 03/15/2024</span>
+                                            <span>Reassignment Required: Yes</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
+                                    <button class="text-blue-600 hover:text-blue-700">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-map-marker-alt text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900">Location Change - Metro Clinic</h4>
+                                        <p class="text-sm text-gray-500">Moved from Downtown to Uptown location</p>
+                                        <div class="flex items-center mt-2 text-xs text-gray-400">
+                                            <span class="mr-4">Affected Members: 1,234</span>
+                                            <span class="mr-4">Created: 03/14/2024</span>
+                                            <span>Reassignment Required: No</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Processing</span>
+                                    <button class="text-blue-600 hover:text-blue-700">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Member Impact Analysis -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-users text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Members Affected</p>
+                                <p class="text-2xl font-bold text-gray-900">2,081</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-exchange-alt text-yellow-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Reassignment Required</p>
+                                <p class="text-2xl font-bold text-gray-900">847</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Completed Moves</p>
+                                <p class="text-2xl font-bold text-gray-900">1,234</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section Navigation for Common Service
+        function showCommonServiceSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('bg-pink-50', 'text-pink-700');
+                link.classList.add('text-gray-600');
+            });
+            
+            // Highlight active nav item
+            event.target.closest('a').classList.remove('text-gray-600');
+            event.target.closest('a').classList.add('bg-pink-50', 'text-pink-700');
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Initialize with dashboard view
+        document.addEventListener('DOMContentLoaded', function() {
+            showCommonServiceSection('dashboard');
+        });
+        // Service Performance Chart - Fixed sizing
+        const serviceCtx = document.getElementById('performanceChart');
+        if (serviceCtx) {
+            serviceCtx.width = 400;
+            serviceCtx.height = 200;
+            
+            new Chart(serviceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                    datasets: [{
+                        label: 'Response Time (ms)',
+                        data: [120, 85, 95, 145, 125, 110, 100],
+                        borderColor: '#ec4899',
+                        backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3
+                    }, {
+                        label: 'Requests/min',
+                        data: [850, 620, 1200, 1450, 1380, 1120, 950],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1',
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    layout: {
+                        padding: 5
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            position: 'left',
+                            max: 160,
+                            grid: { color: '#f3f4f6' },
+                            ticks: {
+                                stepSize: 30,
+                                maxTicksLimit: 6
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            max: 1600,
+                            grid: { display: false },
+                            ticks: {
+                                stepSize: 300,
+                                maxTicksLimit: 6
+                            }
+                        },
+                        x: {
+                            grid: { color: '#f3f4f6' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, padding: 15 }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
